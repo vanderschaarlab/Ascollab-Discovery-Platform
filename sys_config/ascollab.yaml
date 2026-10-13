@@ -1,0 +1,316 @@
+exp_name: ascollab
+SEED: 1
+run_name: ${exp_name}_${now:%y%m%d_%H%M}
+
+# discovery_dataset (target and dataset keys) comes from a dataset bundle in sys_config/dataset/;
+# KIRC by default. Choose another with dataset=<kirc|luad|paad|nhanes>.
+
+data:
+  preflight: true
+  preflight_strict: true
+
+network:
+  num_agents: 16 # N (paper)
+  iterations: 40 # T (paper)
+  # setting can be network_hetero | network_homo | indep_homo
+  setting: network_hetero
+  # Set explicitly (null => derive from network.setting: indep_homo -> false,
+  # network_homo / network_hetero -> true).
+  enable_collaboration_tools: true
+  enable_social_memory_tools: true
+  # Shared social memory (the PUBLIC archive; experiment 08): cumulative keeps every accepted paper;
+  # markovian keeps only the papers accepted in the previous round.
+  social_memory:
+    mode: cumulative # cumulative | markovian
+
+# Retrieval from the public paper archive and the agent registry (paper: citations shape what
+# agents find). Ranking score = similarity + citation (and optional recency) terms, each
+# min-max normalised over the candidates. On resume, the settings saved in the snapshot win.
+memory:
+  max_k: 5 # most results one archive or registry search returns
+  archive:
+    citation_boost: true
+    recency_boost: false
+    w_citation: 0.1 # added to the normalised similarity
+    w_recency: 0.1
+  registry:
+    citation_boost: true
+    w_sim: 0.8 # score = w_sim * similarity + w_cit * citations
+    w_cit: 0.2
+
+bootstrap:
+  enabled: false # master switch for the bootstrap iteration mode
+  warn_if_network_setting_ignored: true
+  fail_if_network_setting_ignored: false
+  pool_path: [] # string path or list of snapshot iteration paths (pool is the union)
+
+  num_agents: ${network.num_agents} # must match network.num_agents
+  iteration: 1 # synthetic iteration index to seed archives/registry
+  start_iteration: 2 # first "real" iteration to run after bootstrap
+  max_public_papers_per_agent: 1 # cap public papers sampled per agent (null = no cap)
+  max_private_papers_per_agent: 1 # cap private papers sampled per agent (null = no cap)
+  write_snapshot: true # if true, write a snapshot for the bootstrap iteration
+
+resume:
+  enabled: false
+  snapshot_path: null # run dir or iteration dir
+  strict_agent_count_match: true
+  archive_incomplete_tail: true # rename incomplete iteration dirs > restored iteration
+
+# How many research agents use each model backend (see docs/models.md).
+llm_backends:
+  # Either use *counts* or *fractions* (0..1). Counts above num_agents are scaled down.
+  # If both are present, counts win.
+  counts:
+    gpt4o: 6
+    gpt5: 5
+    deepseek: 5
+    llama: 0
+  # fractions:  # optional alternative
+  #   gpt4o: 0.4
+  #   gpt5: 0.2
+  #   deepseek: 0.2
+  #   llama: 0.2
+  shuffle: true # randomize assignment order for fairness across runs (seeded by Hydra SEED)
+
+tools:
+  arxiv_http_timeout_seconds: 30 # global HTTP timeout for all arxiv API calls (library default: none)
+  arxiv:
+    enabled: true
+    top_k_results: 3
+    load_max_docs: 5
+    doc_content_chars_max: null
+
+graph_logic:
+  enabled: false
+  require_plot_citations_in_research: true
+  plot_only_rewrite_cap: 2 # max plot-only rewrite nudges before waiver attempt
+  allow_plot_validation_waiver_after_cap: true # if true, waive plot-only errors after cap when non-plot citations are valid
+  summary:
+    backend: code_stats_llm # code_stats_llm | agent_sidecar | heuristic_fallback_only
+    fallback_order:
+      - code_stats_llm
+      - agent_sidecar
+      - heuristic_fallback_only
+    allow_vision_fallback: false # vision_llm backend: not implemented
+    timeout_seconds: 90 # unused: no summary backend calls a model
+    max_retries: 2 # unused
+    include_descriptive_stats: true
+    include_comparative_stats: true
+    max_series_per_plot: 12
+
+research:
+  research_max_iters: 40 # M (paper): steps per research session
+  code_timeout_seconds: 900
+  total_session_timeout_seconds: 720
+  session_create_hard_timeout_seconds: 1800
+  max_concurrent_research_agents: 10 # optional cap for research session admission; null disables cap
+  execute_code_retries: 120
+  execute_code_retry_delay_seconds: 5
+  code_collaboration: true # true -> pair-programming mode, false -> original pipeline
+  self_reflection_prompt:
+    enabled: false
+  nature_style_papers_prompt:
+    enabled: false
+  notepad:
+    enabled: false
+    max_entries_per_agent: 200
+    max_entry_chars: 2000
+  metacognition_feedback:
+    enabled: false
+    mode: none # none | meta_review_only | meta_review_with_metrics | metrics_only
+    apply_on_resume_first_iteration: true
+    source_iteration: previous # previous | restored | explicit integer
+    include_rejected: true
+    include_timeout: false
+    include_collaborator_papers: true
+    max_papers_per_agent: 3
+    max_reviews_per_paper: 4
+    max_chars_per_review: 1200
+    max_chars_per_paper: 1800
+    axes: [originality, significance, soundness, support]
+    metrics_allowlist: null
+    llm_backend: null
+    strict_source_required: true
+    best_effort: false
+    write_artifacts: true
+  fixed_workflow:
+    enabled: false # master switch for fixed-workflow ablation behavior
+    assignment_policy: weakest_agent # weakest_agent (global weakest collaborator) | seeded_random (deterministic random collaborator ordering)
+    tie_break: seeded_random # tie breaker when weakness scores are equal: seeded_random | agent_id
+    self_fallback: second_weakest # if an agent would self-collaborate: second_weakest | seeded_random
+    require_establish_before_first_code: true # block execute_code until the assigned collaborator is established
+    require_collab_message: true # require explicit collaboration interaction before finalizing
+    min_collab_messages: 1 # minimum count of communicate_with_collaborator interactions when require_collab_message=true
+    force_tool_target: true # enforce assigned collaborator id for establish_collaboration calls
+    disable_agent_registry_tool: true # remove search_agent_registry from research-agent toolset in fixed_workflow
+    write_artifacts: true # write per-iteration assignment/compliance artifacts to snapshots
+  meta_researcher:
+    enabled: false
+    every_n_iterations: 3
+    start_iteration: 3
+    min_public_archive_papers: 4
+    agent_scope:
+      mode: all_active # all_active | top_k_reputation | explicit_ids
+      top_k: null
+      agent_ids: []
+    source_corpus:
+      max_papers: 24
+      max_chars_per_paper: 1800
+      sort_by: recency_then_citations
+    output:
+      papers_per_agent: 1
+      paper_id_suffix: meta
+      require_contradictions_section: true
+      require_archive_citations: true
+      min_archive_citations: 3
+    runtime:
+      code_collaboration: true
+      disable_collab_tools: false
+      total_session_timeout_seconds: ${research.total_session_timeout_seconds}
+    quality_contract:
+      require_claim_evidence_table: true
+      require_support_checks_section: true
+      require_contradiction_resolution_section: true
+      require_bounded_final_claims_section: true
+      require_executable_claim_checks_section: true
+      require_reproducibility_notes_section: true
+      min_supported_major_claims: 3
+      min_code_verified_major_claims: 1
+      max_unsupported_major_claims: 0
+      max_unresolved_uncertainty_claims: 0
+      max_words: 950
+    validation_gate:
+      enabled: true
+      max_revision_attempts: 1
+      allow_single_revision_pass: true
+      fail_on_unresolved_nan_claims: true
+      fail_on_missing_evidence_mapping: true
+    telemetry:
+      write_iteration_file: true
+      write_meta_quality_report: true
+      write_evidence_map: true
+      write_meta_claim_checks: true
+      write_citation_lint: true
+      write_ranker_pools: true
+  prior_papers:
+    enabled: false # paper setting: no earlier own papers injected into the prompt
+    mode: full # summary | full
+    keep_full: 1
+    summary_cfg_path: sys_config/llm_api/default.yaml
+  full_citing: false # strict citation tags; only takes effect with prior_papers.enabled=true and mode=full
+
+review:
+  review_max_iterations: 6 # steps per review session
+  num_reviewers_per_paper: 2 # K (paper)
+  reviewer_assignment_strategy: expertise_matching # preferred key: expertise_matching (search-based) | random (deterministic random)
+  reviewer_assignment_seed: ${SEED} # base seed for reviewer assignment determinism
+  reviewer_assignment_condition_label: null # optional deterministic salt (useful for paired/ablation conditions)
+  matching_seed: null # DEPRECATED alias for reviewer_assignment_seed; when set it wins. Leave null.
+  # Reviewer norm injection (experiment 09). When enabled, `text` is injected verbatim into every
+  # reviewer prompt (reviewer-level only; the meta-reviewer prompt is untouched).
+  # Prefer composing one of the sys_config/review_norm/*.yaml variants via
+  # `+review_norm@review.norm_prompt=<variant>` so the norm is a versioned artefact.
+  norm_prompt:
+    enabled: false
+    label: null   # e.g. norm_a_novelty | norm_b_soundness — persisted for provenance
+    text: null    # the norm instruction injected into every reviewer prompt
+  include_code_in_reviews: true
+  total_session_timeout_seconds: 1200
+  allow_self_review: false
+  matching_strategy: registry # legacy compatibility key: registry (=expertise_matching) | random
+  random_matching_seed_offset: 31337 # legacy random path salt; combined with seed+iteration+paper_id
+  require_assertion_justification: false # when true, reviewers must justify every assertion with archive/arxiv/code evidence
+  metrics_pipeline: default # default | experimental | none (none disables metric generation and prompt injection)
+  metrics_allowlist:
+    # Support
+    - support.external_papers_read
+    - support.successful_code_executions
+    - support.lines_of_code
+    - support.evidence_types_present
+    - support.num_statistical_code_cells
+    - support.evidence_breadth_index
+    - support.analytical_depth
+    - support.claim_evidence_alignment_max_cosine
+    # Soundness
+    - soundness.internal_consistency_score
+    - soundness.num_statistical_validity_checks_passed
+    - soundness.num_statistical_validity_checks_total
+    - soundness.diagnostic_validity_pass_rate
+    # Significance
+    - significance.clinical_biological_relevance
+    - significance.clinical_relevance_score
+    - significance.effect_size_strength
+    - significance.distance_to_prior_mean
+    - significance.distance_to_prior_min
+    - significance.distance_to_prior_max
+    # Originality
+    - originality.hypothesis_overlap_jaccard
+    - originality.concept_pair_rarity
+    - originality.concept_entropy
+    - originality.semantic_novelty_knn_distance
+    - originality.embedding_novelty_percentile
+    - originality.methodological_novelty_flag
+    - originality.mechanistic_novelty_flag
+  metric_weights:
+    default: {}
+    # support: 1.0
+    # soundness: 1.0
+    # significance: 1.0
+    # originality: 1.0
+    by_agent: {} # e.g., agent_01: {originality: 1.5, support: 0.8}
+
+metareview:
+  tournament_size: 4
+  shuffle_before_tournament: true
+  total_session_timeout_seconds: 1200
+  # Reviewerless ablation (experiment 07). When true: skip the review stage entirely and let
+  # the meta-reviewer score submissions directly (no reviewers, no reviews).
+  reviewerless:
+    enabled: false
+
+reputation:
+  enabled: false
+  score_key: "Overall Recommendation"
+  additional_score_keys: ["Support", "Soundness", "Significance", "Originality"]
+  min_score: 1
+  max_score: 5
+  include_acceptance_rate: false
+  recency_halflife_iterations: 3
+  policy_learning:
+    enabled: true
+    learning_rate: 0.15
+    min_delta_for_update: 0.01
+
+reputation_pause:
+  mode: none # full_pause | full_pause_permanent | full_pause_permanent_replace | full_pause_permanent_scheduled | no_review_or_collab | no_review | adjust_research_iters | none
+  threshold: 2.0
+  max_paused_agents: null # null => unlimited (legacy behavior)
+  schedule: [] # e.g. [{iteration: 5, pause_count: 5}] for full_pause_permanent_scheduled
+  duration_iterations: 1
+  iteration_delta: 5
+  min_research_iters: 1
+  score_key: "Overall Recommendation"
+  additional_score_keys: ["Support", "Soundness", "Significance", "Originality"]
+  min_score: 1
+  max_score: 5
+  apply_when_score_missing: false
+  recency_halflife_iterations: 3
+  replacement:
+    enabled: false # when true, create replacement agents for newly permanently-paused agents
+    agent_id_prefix: agent
+    network_setting: ${network.setting}
+
+# Model endpoints: one file per backend under sys_config/llm_api and sys_config/embedder_api,
+# created from default_to_complete.yaml (never committed). Only llm_primary, the embedder and the
+# backends with a share in llm_backends need a file; see docs/models.md.
+defaults:
+  - _self_
+  - dataset: kirc
+  - optional llm_api@endpoints.llm_primary: default
+  - optional embedder_api@endpoints.embedder_primary: default
+
+  - optional llm_api@endpoints.gpt4o: gpt-4o
+  - optional llm_api@endpoints.gpt5: gpt-5
+  - optional llm_api@endpoints.deepseek: deepseek
+  - optional llm_api@endpoints.llama: llama

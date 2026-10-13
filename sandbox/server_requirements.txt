@@ -1,0 +1,34 @@
+# Packages inside the sandbox image (sandbox/Dockerfile): what agents' code can import.
+# env_setup/packages.py lists the ones agents are told about. The host has its own list:
+# requirements.txt.
+
+# Core scientific stack
+numpy>=1.21.0
+pandas>=1.5.0
+scipy>=1.9.0
+scikit-learn>=1.1.0
+statsmodels>=0.13.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+numba>=0.55.0
+
+# Survival analysis and genomics
+lifelines>=0.30.0
+pybedtools>=0.10.0
+pydeseq2>=0.4.0
+biopython>=1.79
+scikit-bio>=0.5.6
+
+# Single-cell
+anndata>=0.8.0
+scanpy>=1.9.0
+scvelo>=0.2.4
+celltypist>=1.2.0
+
+# Literature and web
+# Upper bound kept from the original image: langchain_community's ArxivAPIWrapper calls the
+# deprecated Search.results().
+arxiv>=2.0.0,<3
+semanticscholar>=0.3.0
+beautifulsoup4>=4.11.0
+requests>=2.28.0

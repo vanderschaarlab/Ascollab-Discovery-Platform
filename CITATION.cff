@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the paper "Open-Ended Scientific Discovery and the Social Dynamics of Evolving Agent Networks".
+
+title: ASCollab
+type: software
+authors:
+  - given-names: Tennison
+    family-names: Liu
+  - given-names: Silas
+    family-names: Ruhrberg Estévez
+  - given-names: Rob
+    family-names: Davis
+version: 1.0.0
+license: Apache-2.0
+repository-code: https://github.com/vanderschaarlab/Ascollab-Discovery-Platform
+keywords:
+  - multi-agent systems
+  - large language models
+  - scientific discovery

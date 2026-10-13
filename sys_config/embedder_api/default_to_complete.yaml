@@ -1,0 +1,19 @@
+# Template for the embeddings endpoint. See docs/models.md.
+#
+# Copy this file to default.yaml in this folder and fill it in. Never commit the copy: it holds a
+# key, and .gitignore excludes it.
+provider: azure # azure | openai (any OpenAI-compatible server)
+
+# provider: azure
+azure_deployment: # embeddings deployment name, e.g. text-embedding-3-large
+azure_endpoint: # e.g. https://<resource>.openai.azure.com/
+api_version: 2024-12-01-preview # an API version your Azure resource supports
+
+# provider: openai
+# model: # e.g. text-embedding-3-large
+# base_url: # optional
+# check_embedding_ctx_length: false # for servers other than OpenAI
+
+# Paste the key below, or read it from the environment: api_key: ${oc.env:AZURE_OPENAI_API_KEY}
+api_key:
+timeout: 120 # seconds per request

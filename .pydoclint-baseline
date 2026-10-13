@@ -1,0 +1,110 @@
+agents/create_agents.py
+    DOC101: Function `init_agents_profiles`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `init_agents_profiles`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent_id_prefix: str].
+--------------------
+agents/meta_review/meta_rev_agent_utils.py
+    DOC111: Function `make_metareviewer_user_message`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `parse_metareview`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+agents/meta_review/meta_reviewer_agent.py
+    DOC111: Function `get_metareviewer_agent`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `metareview_node`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+agents/research/collab_agent_utils.py
+    DOC111: Function `make_collab_agent_system_prompt`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+agents/research/primary_agent_utils.py
+    DOC101: Function `make_primary_agent_system_prompt`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `make_primary_agent_system_prompt`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [fixed_workflow_context: dict[str, Any] | None, full_citing_enabled: bool, graph_logic_enabled: bool, metacognition_feedback_context: dict[str, Any] | None, nature_style_papers_prompt_enabled: bool, prior_paper_summaries: list[str] | None, prior_papers: list[PaperMetadataPrivate] | None, prior_papers_enabled: bool, prior_papers_mode: str, require_plot_citations_in_research: bool, self_reflection_prompt_enabled: bool].
+--------------------
+agents/research/research_team.py
+    DOC101: Function `get_research_team`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_research_team`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [code_collaboration: bool, execute_code_retries: int, execute_code_retry_delay: float, fixed_workflow_context: dict[str, Any] | None, full_citing_enabled: bool, graph_logic_cfg: dict[str, Any] | None, iteration: int, meta_research_context: dict[str, Any] | None, meta_research_mode: bool, metacognition_feedback_context: dict[str, Any] | None, nature_style_papers_prompt_enabled: bool, prior_paper_status_by_id: dict[str, str] | None, prior_paper_summaries: list[str] | None, prior_papers: list[PaperMetadataPrivate] | None, prior_papers_enabled: bool, prior_papers_mode: str, self_reflection_prompt_enabled: bool].
+--------------------
+agents/review/rev_agent_utils.py
+    DOC101: Function `make_reviewer_user_message`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `make_reviewer_user_message`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [meta_research_context: dict[str, Any] | None, metrics: dict[str, Any] | None, plot_artifacts: list[dict[str, Any]] | None].
+--------------------
+env_setup/build_llms.py
+    DOC106: Method `FallbackEmbeddings._try`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `FallbackEmbeddings._try`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+--------------------
+env_setup/config_factory.py
+    DOC106: Function `tool_signature_line`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `tool_signature_line`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+--------------------
+env_setup/langchain_tools.py
+    DOC201: Function `registry_query_tool` does not have a return section in docstring
+--------------------
+env_setup/preflight_data.py
+    DOC106: Function `_as_list`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `_as_list`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+--------------------
+env_setup/sandbox_utils.py
+    DOC102: Method `SandboxClient.sticky_session`: Docstring contains more arguments than in function signature.
+    DOC103: Method `SandboxClient.sticky_session`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: [**create_kwargs: ].
+--------------------
+ranker/ranker_core.py
+    DOC101: Function `run_ranker`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `run_ranker`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [prompt_section_notes: dict[str, str] | None].
+--------------------
+ranker/ranker_utils.py
+    DOC101: Function `_extract_winner`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_extract_winner`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [text: str].
+    DOC101: Function `_extract_hs_decision`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_extract_hs_decision`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [text: str].
+--------------------
+ranker/sample_and_rank_common.py
+    DOC101: Function `_build_summary_base`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_build_summary_base`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [comparisons: list[dict], cumulative: bool, duration_seconds: float, iterations: str | list[int], paper_data: list[dict[str, Any]] | None, parallelism_cfg: dict[str, Any], run_datetime: str, run_id: str, sampling_cfg: dict[str, Any], total_unique_pairs: int].
+    DOC201: Function `_build_summary_base` does not have a return section in docstring
+--------------------
+ranker/sample_and_rank_non_paired.py
+    DOC101: Function `_gather_papers_non_paired`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_gather_papers_non_paired`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [paper_selection_cfg: dict[str, Any] | None, pool_label: str, snapshot_dirs: list[str]].
+--------------------
+ranker/sample_and_rank_paired.py
+    DOC101: Function `_gather_papers`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_gather_papers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [experiments_cfg: dict[str, Any], paper_selection_cfg: dict[str, Any] | None].
+--------------------
+ranker/snapshot_import.py
+    DOC101: Function `_read_papers`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_read_papers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [exclude_timeout: bool, include_rejected: bool, iteration: int, paper_kind_filter: str, snap_path: Path].
+    DOC201: Function `_filter_by_status` does not have a return section in docstring
+--------------------
+system/main.py
+    DOC101: Function `_normalize_metrics_pipeline_mode`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_normalize_metrics_pipeline_mode`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [raw_value: Any].
+--------------------
+system/metareview_one_step.py
+    DOC201: Function `metareview_one_step` does not have a return section in docstring
+--------------------
+system/resume_snapshot.py
+    DOC101: Function `resolve_resume_source`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `resolve_resume_source`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [project_root: Path, snapshot_path: str | Path].
+--------------------
+system/review_metrics.py
+    DOC101: Function `normalize_metric_allowlist`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `normalize_metric_allowlist`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [metrics_allowlist: list[str] | None].
+--------------------
+system/review_one_step.py
+    DOC106: Function `_wrap`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `_wrap`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC101: Function `review_one_step`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `review_one_step`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [default_llm_runtime_metadata: dict[str, Any] | None, excluded_reviewer_ids: set[str] | None, graph_logic_cfg: dict[str, Any] | None, llm_backend_key_for: Callable[[str], str | None] | None, reviewer_norm_text: str | None, sandbox_requirements: dict[str, Any] | None].
+--------------------
+system/reviewer_matching.py
+    DOC107: Function `match_papers_to_reviewers`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+--------------------
+system/snapshot_utils.py
+    DOC101: Function `create_snapshot`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `create_snapshot`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [fixed_workflow_metadata: dict[str, Any] | None, meta_researcher_metadata: dict[str, Any] | None, metacognition_feedback_metadata: dict[str, Any] | None, metrics_by_paper: dict[str, dict[str, Any]] | None, paper_metadata: list[Any] | None, social_memory_pruning_metadata: dict[str, Any] | None].
+--------------------
+system/trackers.py
+    DOC102: Method `ResearchStatsLog.add_event`: Docstring contains more arguments than in function signature.
+    DOC103: Method `ResearchStatsLog.add_event`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: [**payload: ].
+--------------------
+system/update_utils.py
+    DOC101: Function `update_status_and_archives`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `update_status_and_archives`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [iteration: int | None, pause_cfg: dict[str, Any] | None, reputation_cfg: dict[str, Any] | None].
+--------------------

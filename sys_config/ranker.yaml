@@ -1,0 +1,22 @@
+hydra:
+  run:
+    dir: outputs/_ranker/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+exp_name: ranker
+SEED: 42
+run_name: ${exp_name}_${now:%y%m%d_%H%M}
+
+# Input file
+input_file: null
+
+# Reuse existing LLM endpoint definitions + ranker config group
+defaults:
+  - _self_
+  - ranker_cfg@ranker: default
+  - optional llm_api@endpoints.llm_primary: default
+  - optional llm_api@endpoints.gpt5: gpt-5
+  - optional llm_api@endpoints.gpt5-high: gpt-5-high
+  # The pipeline's other backends, so that any of them can be the judge (ranker.llm_backend).
+  - optional llm_api@endpoints.gpt4o: gpt-4o
+  - optional llm_api@endpoints.deepseek: deepseek
+  - optional llm_api@endpoints.llama: llama

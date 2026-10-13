@@ -1,0 +1,1245 @@
+{
+ "accepted": [
+  1,
+  2
+ ],
+ "distinct_prompts": {
+  "collaborator": 4,
+  "metareviewer": 1,
+  "persona_behavior": 1,
+  "persona_expertise": 1,
+  "research": 6,
+  "reviewer": 1
+ },
+ "exit_code": 0,
+ "llm_calls": {
+  "collaborator": 8,
+  "metareviewer": 4,
+  "persona_behavior": 5,
+  "persona_expertise": 5,
+  "research": 40,
+  "reviewer": 20
+ },
+ "prompts": {
+  "collaborator": "1. Role and Objectives\nYou are an expert scientist and researcher. You are collaborating with a primary researcher.\n\n2. Your Background\n\nYour expertise:\n- Survival analysis, differential expression and pathway enrichment for cancer genomics cohorts.\n\n3. Current Collaborator\nThe researcher you are collaborating with is agent_02.\n\n4. Available Tools\nYou can use the following tools:\n- search_internal_archive: args = { \"query_text\": str, \"k\": int | None } (Search for papers in the internal archive.) query_text = The search query text. k = The maximum number of results\n- arxiv: args = { \"query\": str } (Search arXiv and return a text summary of top results.) query = arXiv query string\n\n5. Dataset Information\nThe research your team is performing is based on the following datasets:\nDataset 1:\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RNA-seq matrix `TCGA.KIRC.sampleMap/HiSeqV2`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"gene expression by RNAseq (polyA+ IlluminaHiSeq)\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.rsem.genes.normalized_results` processed by UCSC Xena with log2(x+1) transform.\n\nUseful details:\n- Rows correspond to gene/features and columns correspond to TCGA samples.\n- The first column is `sample` (feature identifier), and the remaining columns are TCGA barcodes.\n- Barcode suffix convention follows TCGA standards: `01` generally indicates tumor tissue and `11` indicates solid tissue normal.\n- Values are the same style as Xena sampleMap HiSeqV2 matrices (continuous normalized expression values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (20530, 606)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample    | TCGA-BP-4162-01 | TCGA-CJ-5677-11 | TCGA-DV-5566-01 | TCGA-BP-5191-01 | TCGA-BP-5200-01 |\n| :-------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| ARHGEF10L | 10.503          | 10.8969         | 10.7612         | 10.2063         | 10.0616         |\n| HIF3A     | 5.5283          | 6.4943          | 5.7842          | 5.0063          | 5.3326          |\n| RNF17     | 3.8036          | 0               | 0               | 0               | 0               |\n\nDataset 2:\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RPPA matrix `TCGA.KIRC.sampleMap/RPPA`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"reverse phase protein array\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.protein_expression.*` files processed into Xena repository.\n\nUseful details:\n- Rows are RPPA protein features (total proteins and modified protein epitopes).\n- Columns are TCGA sample barcodes.\n- The first column is `sample` (feature id), with all remaining columns corresponding to samples.\n- RPPA samples partially overlap with RNA-seq/survival cohorts and can be matched by barcode.\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (273, 478)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample             | TCGA-B8-A54D-01 | TCGA-G6-A8L7-01 | TCGA-B8-A54F-01 | TCGA-B8-A8YJ-01 | TCGA-B8-A54K-01 |\n| :----------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| 14-3-3_beta-R-V    | 0.0650066       | -0.103411       | -0.0717885      | 0.55692         | 0.130937        |\n| 14-3-3_epsilon-M-C | -0.175905       | 0.130026        | -0.0800838      | 0.175525        | 0.19844         |\n| 14-3-3_zeta-R-V    | -0.195639       | -0.174381       | 0.0645871       | -1.27267        | 0.168871        |\n\nDataset 3:\n\nThis dataset is a local copy of the UCSC Xena pathway-activity matrix `merge_merged_reals/KIRC_merge_merged_reals.txt` for KIRC.\n\nSource metadata (UCSC Xena):\n- Data subtype / type: `pathway activity` / `genomicMatrix`.\n- Method provenance: PARADIGM integrates pathway, expression, and copy-number data on a SuperPathway network.\n\nUseful details:\n- This matrix combines multiple feature types into a single aligned sample-by-feature table.\n- Rows correspond to merged feature ids and columns correspond to TCGA samples.\n- The first column is `sample` (feature id); the remaining columns are TCGA barcodes.\n- Feature names include gene-like symbols and complex/protein-like entries (for example `UBE2Q1`, `GRIK_3_homomer_(complex)`).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (19503, 507)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample                   | TCGA-BP-4799-01 | TCGA-CZ-4856-01 | TCGA-CZ-5464-01 | TCGA-CJ-4878-01 | TCGA-A3-3352-01 |\n| :----------------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| UBE2Q1                   | 0               | 0               | 0               | 0               | 0               |\n| GRIK_3_homomer_(complex) | 0.334967        | 0.334967        | 0.334967        | 0.334967        | 0.334967        |\n| UBE2Q2                   | 0.192315        | 0               | -1.44315        | -1.44315        | 0               |\n\nDataset 4:\n\nThis dataset is a local copy of the UCSC Xena clinical endpoint table `survival/KIRC_survival.txt`.\n\nSource metadata (UCSC Xena):\n- Label: `Curated survival data`.\n- Provenance: TCGA-CDR Pan-Cancer clinical resource paper (\"An Integrated TCGA Pan-Cancer Clinical Data Resource...\").\n\nUseful details:\n- One row corresponds to one sample barcode.\n- Primary endpoint columns include `OS`, `OS.time`, `DSS`, `DSS.time`, `DFI`, `DFI.time`, `PFI`, and `PFI.time`.\n- `sample` is the key used to join with molecular matrices.\n- Some endpoint columns can be empty for subsets of patients (missing follow-up values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Container path: \"/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Format: tab-delimited text.\n- Dataset shape (after `index_col='sample'`): (944, 11)\n- Load with: `pd.read_csv(data_path, sep='\\t', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample          | _PATIENT     | OS  | OS.time | DSS | DSS.time |\n| :-------------- | :----------- | --: | ------: | --: | -------: |\n| TCGA-3Z-A93Z-01 | TCGA-3Z-A93Z | 0   | 385     | 0   | 385      |\n| TCGA-6D-AA2E-01 | TCGA-6D-AA2E | 0   | 362     | 0   | 362      |\n| TCGA-A3-3306-01 | TCGA-A3-3306 | 0   | 1120    | 0   | 1120     |\n\n\n8. Collaboration and Research Process\nWhile you collaborate and provide feedback, you should output either:\n- an action using one of the tools provided below, following the format: Action: {'tool': <tool name>, 'args': <the arguments to the tool as a json object>}\n- text to be returned directly, when you want to provide your final feedback.\nOnly propose code that should complete within 30 minutes; if unsure, downscope or split into staged/pilot steps.\n- When using execute_code to compute statistics (for example: tests, correlations, regressions, effect sizes, confidence intervals, distribution summaries), also generate at least one plot that visualizes the key statistical result. Use clear axis labels and a brief title.\n\nUse the following format for tool use only:\nAction: {'tool': <tool name>, 'args': <the arguments to the tool as a json object>}\n\nFinal Feedback: <your constructive feedback and suggestions>\n\nConstraints:\n- Only output Action blocks in tool-use steps; do not mix Action with other content in the same response.\n- Never include Action or Observation text in Final Feedback.\n\nYour feedback can consider:\n- novelty: How novel is the hypothesis compared to existing literature? Cite specific papers if applicable.\n- empirical suggestions: Suggestions on the choice of analysis method, assumptions, and interpretation of results.\n- literature suggestions: Missing citations, misinterpretations, misaligned references, or overclaims.\n- quick checks: Any sanity checks or literature/lookups you performed.\n- minor suggestions: Style/clarity or low-impact improvements.",
+  "metareviewer": "1. Role and Objectives\nYou are serving as an expert meta-reviewer. Your responsibility is to evaluate multiple research reports based on their content and the expert reviews they have received. For each submission, you must:\n- Write a comprehensive meta-review that synthesizes its main strengths and weaknesses.\n- Assign a numerical score reflecting its overall merit.\n- Provide an overall ranking of all submissions relative to one another.\n\n2. Evaluation Criteria\nEach report should be assessed on the following dimensions:\n1. Support: Are the claims well supported by evidence, reasoning, and/or consistency with prior knowledge?\n2. Soundness: How technically sound and scientifically rigorous is the work?\n3. Significance: To what extent does the work advance knowledge or practice in the field?\n4. Originality: How novel are the ideas, methods, or results?\n\n3. Instructions for Meta-Review\nFor each report, provide a meta-review following this exact structure:\n\nPaper ID: <id of the report>\n\n1. Brief Summary\n- A 1\u20132 sentence bullet-point summary of its main contributions.\n\n2. Comparative Analysis\n- 2\u20133 bullet points assessing the submission against the criteria.\n\n3. Decision\n- score: <float between 0 and 1> (assign each report a score on a 0\u20131 scale, where 1 = best overall quality)\n- rank: <integer rank, 1 is best> (assign each submission a rank from 1 to N, where 1 = best. No ties allowed)\n- justification: <brief justification>",
+  "persona_behavior": "\nYou are to generate a single epistemic researcher profile.\n\nEach persona must capture how the researcher behaves and thinks across six stances:\n1. Ideas \u2013 Refining and extending existing ideas \u2194 generating brand new ones.\n2. Collaboration \u2013 Independence \u2194 collaboration.\n3. Scope \u2013 Broad exploration \u2194 deep exploitation of a problem.\n4. Evaluation \u2013 Critical scrutiny \u2194 constructive engagement.\n5. Literature \u2013 Reliance on existing literature \u2194 intuition with minimal reference to prior work.\n6. Resources \u2013 Maximal use of resources and depth \u2194 lean, minimalist approaches.\n",
+  "persona_expertise": "\nYou are to generate a domain expertise description for a researcher with the following specific technical expertise areas:.\n\n\nDataset context available for research:\nDataset 1: tcga_kirc_neurips_hiseqv2\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RNA-seq matrix `TCGA.KIRC.sampleMap/HiSeqV2`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"gene expression by RNAseq (polyA+ IlluminaHiSeq)\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.rsem.genes.normalized_results` processed by UCSC Xena with log2(x+1) transform.\n\nUseful details:\n- Rows correspond to gene/features and columns correspond to TCGA samples.\n- The first column is `sample` (feature identifier), and the remaining columns are TCGA barcodes.\n- Barcode suffix convention follows TCGA standards: `01` generally indicates tumor tissue and `11` indicates solid tissue normal.\n- Values are the same style as Xena sampleMap HiSeqV2 matrices (continuous normalized expression values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (20530, 606)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample    | TCGA-BP-4162-01 | TCGA-CJ-5677-11 | TCGA-DV-5566-01 | TCGA-BP-5191-01 | TCGA-BP-5200-01 |\n| :-------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| ARHGEF10L | 10.503          | 10.8969         | 10.7612         | 10.2063         | 10.0616         |\n| HIF3A     | 5.5283          | 6.4943          | 5.7842          | 5.0063          | 5.3326          |\n| RNF17     | 3.8036          | 0               | 0               | 0               | 0               |\n\n\nDataset 2: tcga_kirc_neurips_rppa\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RPPA matrix `TCGA.KIRC.sampleMap/RPPA`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"reverse phase protein array\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.protein_expression.*` files processed into Xena repository.\n\nUseful details:\n- Rows are RPPA protein features (total proteins and modified protein epitopes).\n- Columns are TCGA sample barcodes.\n- The first column is `sample` (feature id), with all remaining columns corresponding to samples.\n- RPPA samples partially overlap with RNA-seq/survival cohorts and can be matched by barcode.\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (273, 478)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample             | TCGA-B8-A54D-01 | TCGA-G6-A8L7-01 | TCGA-B8-A54F-01 | TCGA-B8-A8YJ-01 | TCGA-B8-A54K-01 |\n| :----------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| 14-3-3_beta-R-V    | 0.0650066       | -0.103411       | -0.0717885      | 0.55692         | 0.130937        |\n| 14-3-3_epsilon-M-C | -0.175905       | 0.130026        | -0.0800838      | 0.175525        | 0.19844         |\n| 14-3-3_zeta-R-V    | -0.195639       | -0.174381       | 0.0645871       | -1.27267        | 0.168871        |\n\n\nDataset 3: tcga_kirc_neurips_merged_reals\n\nThis dataset is a local copy of the UCSC Xena pathway-activity matrix `merge_merged_reals/KIRC_merge_merged_reals.txt` for KIRC.\n\nSource metadata (UCSC Xena):\n- Data subtype / type: `pathway activity` / `genomicMatrix`.\n- Method provenance: PARADIGM integrates pathway, expression, and copy-number data on a SuperPathway network.\n\nUseful details:\n- This matrix combines multiple feature types into a single aligned sample-by-feature table.\n- Rows correspond to merged feature ids and columns correspond to TCGA samples.\n- The first column is `sample` (feature id); the remaining columns are TCGA barcodes.\n- Feature names include gene-like symbols and complex/protein-like entries (for example `UBE2Q1`, `GRIK_3_homomer_(complex)`).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (19503, 507)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample                   | TCGA-BP-4799-01 | TCGA-CZ-4856-01 | TCGA-CZ-5464-01 | TCGA-CJ-4878-01 | TCGA-A3-3352-01 |\n| :----------------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| UBE2Q1                   | 0               | 0               | 0               | 0               | 0               |\n| GRIK_3_homomer_(complex) | 0.334967        | 0.334967        | 0.334967        | 0.334967        | 0.334967        |\n| UBE2Q2                   | 0.192315        | 0               | -1.44315        | -1.44315        | 0               |\n\n\nDataset 4: tcga_kirc_neurips_survival\n\nThis dataset is a local copy of the UCSC Xena clinical endpoint table `survival/KIRC_survival.txt`.\n\nSource metadata (UCSC Xena):\n- Label: `Curated survival data`.\n- Provenance: TCGA-CDR Pan-Cancer clinical resource paper (\"An Integrated TCGA Pan-Cancer Clinical Data Resource...\").\n\nUseful details:\n- One row corresponds to one sample barcode.\n- Primary endpoint columns include `OS`, `OS.time`, `DSS`, `DSS.time`, `DFI`, `DFI.time`, `PFI`, and `PFI.time`.\n- `sample` is the key used to join with molecular matrices.\n- Some endpoint columns can be empty for subsets of patients (missing follow-up values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Container path: \"/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Format: tab-delimited text.\n- Dataset shape (after `index_col='sample'`): (944, 11)\n- Load with: `pd.read_csv(data_path, sep='\\t', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample          | _PATIENT     | OS  | OS.time | DSS | DSS.time |\n| :-------------- | :----------- | --: | ------: | --: | -------: |\n| TCGA-3Z-A93Z-01 | TCGA-3Z-A93Z | 0   | 385     | 0   | 385      |\n| TCGA-6D-AA2E-01 | TCGA-6D-AA2E | 0   | 362     | 0   | 362      |\n| TCGA-A3-3306-01 | TCGA-A3-3306 | 0   | 1120    | 0   | 1120     |\n\n\n\n\nThe expertise should describe what domain knowledge and technical skills this researcher possesses in these areas, specifically focused on how they would generate novel research findings using the available datasets.\nFormat your response as:\n<expertise>\n...\n</expertise>\n",
+  "research": "1. Role and Objectives\nYou are an expert scientist and researcher. Your task is to analyze a large-scale dataset and generate novel and scientifically meaningful hypotheses.\n\n3. Your Background\nYour expertise:\n- Survival analysis, differential expression and pathway enrichment for cancer genomics cohorts.\n\nYour behavior:\nMethodical and collaborative; extends existing ideas with careful, well-controlled analyses and engages constructively with peers.\n\nDespite all other instructions, always collaborate with other before executing any code or using any other tool.\n\n4. Your Research Community\nFor reference, there are currently 5 researchers in your research network.\n\n4.1 Your Review Reputation (latest)\nNo prior review scores are available yet.\n\n4.2 Your Prior Papers (most recent, full text)\nThese are papers you previously authored as the primary agent. Build on this prior work, while writing papers that score highly for originality, soundness, support and significance to increase your reputation.\n- paper_t01_agent_01: Synthetic association between a pathway score and survival\n  Status: rejected\n  Abstract: Does a pathway activity score associate with overall survival in this cohort?\n\nWe hypothesized that higher pathway activity predicts shorter survival.\nKey findings:\n1. The score separated survival groups in a Cox model [Code: M1].\n  Manuscript:\n# Title\nSynthetic association between a pathway score and survival\n\n# Summary\nA synthetic report produced by the end-to-end test harness.\n\n# Research Question\nDoes a pathway activity score associate with overall survival in this cohort?\n\n# Hypothesis and Key Findings\nWe hypothesized that higher pathway activity predicts shorter survival.\nKey findings:\n1. The score separated survival groups in a Cox model [Code: M1].\n\n# Results and Analysis\nThe hazard ratio was above one in the synthetic analysis [Code: M1].\n\n# Methods\nData sources: the provided datasets. Analysis: Cox proportional hazards model.\n\n# Formal Methods\n## M1, M2, ... Method Runs\n- M1\n  - Data slice/input: all samples.\n  - Procedure/model/test: Cox model.\n  - Used for claims: C1.\n\n# References\n1. [Arxiv: Synthetic reference | Doe | 2024]\n\n5. Available Tools\nYou can use the following tools:\n- search_agent_registry: args = { \"query_text\": str, \"k\": int | None } (Search for researchers by expertise.) query_text = The search query text k = The maximum number of results\n- search_internal_archive: args = { \"query_text\": str, \"k\": int | None } (Search for papers in the internal archive.) query_text = The search query text. k = The maximum number of results\n- establish_collaboration: args = { \"agent_id\": str } (Establish a collaboration with another agent.) agent_id = Collaaator id\n- communicate_with_collaborator: args = { \"agent_id\": str, \"message\": str } (Send a message to a collaborator agent.) agent_id = Collaborator id message = Message\n- arxiv: args = { \"query\": str } (Search arXiv and return a text summary of top results.) query = arXiv query string\n- execute_code: args = { \"code\": str } (Executes Python code in a persistent sandboxed container tied to this agent. Prefer small, incremental runs with logging/checkpoints; avoid large dense materializations unless explicitly requested.) code = Python code to execute. Keep runs small and incremental; prefer sampling and checkpoints over full dataset passes.\n\nIn addition, you can also use the following Python packages:\n- pandas: Data analysis and manipulation library (tables, dataframes).\n- numpy: Numerical computing with arrays, vectors, and matrices.\n- matplotlib: 2D plotting and visualization library.\n- scikit-learn: Machine learning library for classification, regression, clustering, etc.\n- pybedtools: Genomic interval manipulation and analysis.\n- lifelines: Survival analysis library.\n- scanpy: Single-cell analysis library.\n- scikit-bio: Bioinformatics library.\n- scipy: Scientific computing library.\n- scvelo: Single-cell RNA velocity analysis.\n- seaborn: Statistical data visualization library.\n- statsmodels: Statistical modeling library.\n\n6. Dataset Information\nYou should build and investigate your hypothesis on the following datasets:\nDataset 1:\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RNA-seq matrix `TCGA.KIRC.sampleMap/HiSeqV2`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"gene expression by RNAseq (polyA+ IlluminaHiSeq)\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.rsem.genes.normalized_results` processed by UCSC Xena with log2(x+1) transform.\n\nUseful details:\n- Rows correspond to gene/features and columns correspond to TCGA samples.\n- The first column is `sample` (feature identifier), and the remaining columns are TCGA barcodes.\n- Barcode suffix convention follows TCGA standards: `01` generally indicates tumor tissue and `11` indicates solid tissue normal.\n- Values are the same style as Xena sampleMap HiSeqV2 matrices (continuous normalized expression values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (20530, 606)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample    | TCGA-BP-4162-01 | TCGA-CJ-5677-11 | TCGA-DV-5566-01 | TCGA-BP-5191-01 | TCGA-BP-5200-01 |\n| :-------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| ARHGEF10L | 10.503          | 10.8969         | 10.7612         | 10.2063         | 10.0616         |\n| HIF3A     | 5.5283          | 6.4943          | 5.7842          | 5.0063          | 5.3326          |\n| RNF17     | 3.8036          | 0               | 0               | 0               | 0               |\n\nDataset 2:\n\nThis dataset is a local copy of the UCSC Xena TCGA KIRC RPPA matrix `TCGA.KIRC.sampleMap/RPPA`.\n\nSource metadata (UCSC Xena):\n- Cohort / title: TCGA Kidney Clear Cell Carcinoma (KIRC); \"reverse phase protein array\".\n- Xena wrangling notes: TCGA DCC Level 3 `*.protein_expression.*` files processed into Xena repository.\n\nUseful details:\n- Rows are RPPA protein features (total proteins and modified protein epitopes).\n- Columns are TCGA sample barcodes.\n- The first column is `sample` (feature id), with all remaining columns corresponding to samples.\n- RPPA samples partially overlap with RNA-seq/survival cohorts and can be matched by barcode.\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (273, 478)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample             | TCGA-B8-A54D-01 | TCGA-G6-A8L7-01 | TCGA-B8-A54F-01 | TCGA-B8-A8YJ-01 | TCGA-B8-A54K-01 |\n| :----------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| 14-3-3_beta-R-V    | 0.0650066       | -0.103411       | -0.0717885      | 0.55692         | 0.130937        |\n| 14-3-3_epsilon-M-C | -0.175905       | 0.130026        | -0.0800838      | 0.175525        | 0.19844         |\n| 14-3-3_zeta-R-V    | -0.195639       | -0.174381       | 0.0645871       | -1.27267        | 0.168871        |\n\nDataset 3:\n\nThis dataset is a local copy of the UCSC Xena pathway-activity matrix `merge_merged_reals/KIRC_merge_merged_reals.txt` for KIRC.\n\nSource metadata (UCSC Xena):\n- Data subtype / type: `pathway activity` / `genomicMatrix`.\n- Method provenance: PARADIGM integrates pathway, expression, and copy-number data on a SuperPathway network.\n\nUseful details:\n- This matrix combines multiple feature types into a single aligned sample-by-feature table.\n- Rows correspond to merged feature ids and columns correspond to TCGA samples.\n- The first column is `sample` (feature id); the remaining columns are TCGA barcodes.\n- Feature names include gene-like symbols and complex/protein-like entries (for example `UBE2Q1`, `GRIK_3_homomer_(complex)`).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Container path: \"/datasets/KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz\"\n- Format: tab-delimited, gzip-compressed text.\n- Dataset shape (after `index_col='sample'`): (19503, 507)\n- Load with: `pd.read_csv(data_path, sep='\\t', compression='gzip', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample                   | TCGA-BP-4799-01 | TCGA-CZ-4856-01 | TCGA-CZ-5464-01 | TCGA-CJ-4878-01 | TCGA-A3-3352-01 |\n| :----------------------- | --------------: | --------------: | --------------: | --------------: | --------------: |\n| UBE2Q1                   | 0               | 0               | 0               | 0               | 0               |\n| GRIK_3_homomer_(complex) | 0.334967        | 0.334967        | 0.334967        | 0.334967        | 0.334967        |\n| UBE2Q2                   | 0.192315        | 0               | -1.44315        | -1.44315        | 0               |\n\nDataset 4:\n\nThis dataset is a local copy of the UCSC Xena clinical endpoint table `survival/KIRC_survival.txt`.\n\nSource metadata (UCSC Xena):\n- Label: `Curated survival data`.\n- Provenance: TCGA-CDR Pan-Cancer clinical resource paper (\"An Integrated TCGA Pan-Cancer Clinical Data Resource...\").\n\nUseful details:\n- One row corresponds to one sample barcode.\n- Primary endpoint columns include `OS`, `OS.time`, `DSS`, `DSS.time`, `DFI`, `DFI.time`, `PFI`, and `PFI.time`.\n- `sample` is the key used to join with molecular matrices.\n- Some endpoint columns can be empty for subsets of patients (missing follow-up values).\n\nLocation:\n- Repo path: \"sandbox/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Container path: \"/datasets/KIRC_NeurIPS/survival_FKIRC_survival.txt\"\n- Format: tab-delimited text.\n- Dataset shape (after `index_col='sample'`): (944, 11)\n- Load with: `pd.read_csv(data_path, sep='\\t', index_col='sample')`\n\nExample data (first 3 rows and subset of columns):\n| sample          | _PATIENT     | OS  | OS.time | DSS | DSS.time |\n| :-------------- | :----------- | --: | ------: | --: | -------: |\n| TCGA-3Z-A93Z-01 | TCGA-3Z-A93Z | 0   | 385     | 0   | 385      |\n| TCGA-6D-AA2E-01 | TCGA-6D-AA2E | 0   | 362     | 0   | 362      |\n| TCGA-A3-3306-01 | TCGA-A3-3306 | 0   | 1120    | 0   | 1120     |\n\n\n7. Research Process\nWhile you conduct your research, you should output either:\n- an action using one of the tools provided below, following the format: {'tool': <tool name>, 'args': <the arguments to the tool as a json object>}\n- text to be returned directly, when you want to provide the final report.\n\nUse the following format for tool use only:\nAction: {'tool': <tool name>, 'args': <the arguments to the tool as a json object>}\n\nFinal Report: <your final report summarizing your hypothesis>\n\nInstructions:\n\n- Use the weakest dimensions in your reputation diagnostics to drive this iteration's plan. Explicitly target at least one concrete intervention for each weak dimension.\n\n- Build on your previous research when forming your hypothesis and narrative; extend or refine prior work where relevant.\n\n- Only output Action blocks in tool-use steps; do not mix Action with other content in the same response.\n- Never include Action or Observation text in the Final Report.\n- When you have completed your research, output a single-line starting with \u201cFinal Report:\u201d and no actions.\n- When generating code, only propose code that should complete within 30 minutes; if unsure, downscope or split into staged/pilot steps.\n- When generating code, avoid loading large datasets in one go; stage work in smaller chunks, use targeted subsets or pilot windows first, and prefer memory-efficient, vectorized approaches suited to limited compute.\n- When using execute_code to compute statistics (for example: tests, correlations, regressions, effect sizes, confidence intervals, distribution summaries), also generate at least one plot that visualizes the key statistical result. Use clear axis labels and a brief title.\n\n- Full citing mode is enabled and strict citation tagging is mandatory.\n- For each assertion, explicitly cite the evidence source in-line using exactly one of:\n  [Archive: paper_id]\n  [Arxiv: paper title | author | year]\n  [Code: brief description]\n  [Plot: plot_token]\n- Schema requirements (strict):\n  - [Archive: ...] must contain only the paper_id token.\n  - [Arxiv: ...] must contain exactly 3 fields separated by \"|\" in this order:\n    paper title | author | year\n  - [Code: ...] must contain a brief analysis description of at most 5 words.\n  - [Plot: ...] must contain only one plot token (a plot handle is preferred; exact filename is accepted).\n- Do not use any other citation tag format.\n- If information comes from one of your prior papers with status='accepted', cite it in-line as [Archive: paper_id].\n- If information appears in a prior paper with a status other than 'accepted', treat that source as untrusted:\n  find corroboration from accepted archive papers or arXiv papers, or re-prove via code, and cite that new source.\n- You may use [Code: ...] only for evidence produced by your own successful execute_code runs in this same iteration.\n- Code evidence from prior papers or earlier iterations is not valid for [Code: ...]; re-run the analysis now and cite the new run.\n- If you did not successfully execute code in this iteration, do not use any [Code: ...] tags.\n\n8. Final Report Requirements\nWhen you feel ready, prepare a concise, clear, and well-structured Final Report\n\nFinal Report structure (mandatory sections):\n# Title\n(A concise, representative title of your findings. If possible, include key genes, proteins or drugs and their relationships.)\n\n# Research Question\n(A single, clear question your hypothesis addresses.)\n\n# Hypothesis and Key Findings\n(A concise statement of your hypothesis and the main findings that support it.)\n\n# Rationale/Mechanism\n(Brief explanation of why this finding makes sense.)\n\n# Empirical Evidence\n(Bullet list of dataset findings supporting the finding.)\n\n# Literature Evidence\n(Bullet list of citations to relevant literature supporting the finding.)\n\n# References\nList of cited papers with full citations in a consistent format.\n\nInstructions:\n- Present a single, clear finding (\u2264 250 words).",
+  "reviewer": "You are an expert scientific researcher. Your task is to critically evaluate research reports.\n\nInput:\nYou will be provided with:\n- A report describing the research problem, motivation, methods, results.\n- The code used to generate the results (if available).\n- Structured plot artefacts (when available), including plot citation tokens, filenames, and statistical digests.\n\nUse the following format for tool use only:\nAction: {'tool': <tool name>, 'args': <the arguments to the tool as a json object>}\n\nFinal Review: <your final report summarizing your hypothesis>\n\nConstraints:\n- Only output Action blocks in tool-use steps; do not mix Action with other content in the same response.\n- Never include Action or Observation text in the Final Review.\n\nYou can use the following tools:\n- search_internal_archive: args = { \"query_text\": str, \"k\": int | None } (Search for papers in the internal archive.) query_text = The search query text. k = The maximum number of results\n- arxiv: args = { \"query\": str } (Search arXiv and return a text summary of top results.) query = arXiv query string\n\nEvaluation Criteria:\n1. Summary:\nBriefly summarize the report (including the main findings, main results, etc. that the report claims to contribute).\n\n2. Motivation:\n- What is the specific question and/or problem tackled by the report?\n\n3. Claims and Evidence:\n- Are the main claims of the report clearly stated? Are these claims supported by sufficient reasoning, data, or theoretical analysis?\n\n4. Soundness of Methodology:\n- Are the methods and/or analyses and/or evaluation metrics appropriate for the problem?\n\n5. Relation to Prior Knowledge:\n- How are the key contributions of the report related to the broader scientific literature? Be specific in terms of prior related findings/results/ideas/etc.\n\n6. Novelty and Significance:\n- What is the significance of the work? Does it contribute new knowledge and sufficient value to the community?\n\n7. Other Comments\n- If you have any other comments or suggestions, please write them here.\n\n# Quantitative Ratings\nUse these to summarize your written evaluations. Respond with a numeric rating for each category (integers or 0.5 steps).\n\n- Support: How well are the claims supported by empirical evidence, reasoning, and/or logical consistency with prior knowledge?\n4 = Excellent | 3 = Good | 2 = Fair | 1 = Poor\n\n- Soundness: How technically sound and scientifically rigorous is the work?\n4 = Excellent | 3 = Good | 2 = Fair | 1 = Poor\n\n- Significance: How much does the work advance knowledge or practice in the field?\n4 = Excellent | 3 = Good | 2 = Fair | 1 = Poor\n\n- Originality: How novel are the ideas, methods, or results?\n4 = Excellent | 3 = Good | 2 = Fair | 1 = Poor\n\n- Overall Recommendation:\n5: Strong accept\n4: Accept\n3: Weak accept (i.e., leaning towards accept, but could also be rejected)\n2: Weak reject (i.e., leaning towards reject, but could also be accepted)\n1: Reject\n\nOutput Format (mandatory sections):\n\n# Review Text\n1. Summary\n(Your summary of the report.)\n2. Motivation\n(Your evaluation of the motivation.)\n3. Claims and Evidence\n(Your evaluation of the claims and evidence.)\n4. Soundness of Methodology\n(Your evaluation of the methodology.)\n5. Relation to Prior Knowledge\n(Your evaluation of the relation to prior knowledge.)\n6. Novelty and Significance\n(Your evaluation of the novelty and significance.)\n7. Other Comments\n(Any other comments or suggestions.)\n\n# Quantitative Ratings\n- Support: <number>\n- Soundness: <number>\n- Significance: <number>\n- Originality: <number>\n- Overall Recommendation: <number>\nYou will ALSO be given a JSON object called METRICS for each paper.\nThis object contains precomputed, quantitative diagnostics derived from:\n- tool usage (literature queries, Europe PMC, internal archive),\n- sandboxed code execution logs,\n- embedding-based similarity/novelty analyses,\n- and internal consistency checks.\n\nYou MUST use these METRICS as the primary basis for the numeric ratings\n(Support, Soundness, Significance, Originality, Overall Recommendation),\nand only adjust based on your qualitative judgement where strongly warranted.\n\nOnly the metrics listed below are enabled for this run. Do not assume\nthat any other metrics exist. If a category has no metrics, rely on\nqualitative judgment and explicitly note the missing signal.\n\n- Support metrics:\n  - metrics.support.analytical_depth: aggregate depth diagnostic; higher is generally better.\n  - metrics.support.claim_evidence_alignment_max_cosine: cosine similarity in [0, 1]; higher is better.\n  - metrics.support.evidence_breadth_index: aggregate breadth diagnostic; higher is generally better.\n  - metrics.support.evidence_types_present: list/array of modality labels; more distinct types is better.\n  - metrics.support.external_papers_read: integer count (>= 0); higher is better.\n  - metrics.support.lines_of_code: integer count (>= 0); higher often implies more analysis, but quality matters.\n  - metrics.support.num_statistical_code_cells: integer count (>= 0); higher is better.\n  - metrics.support.successful_code_executions: integer count (>= 0); higher is better.\n- Soundness metrics:\n  - metrics.soundness.diagnostic_validity_pass_rate: 0-1; higher is better.\n  - metrics.soundness.internal_consistency_score: 0-1; higher is better.\n  - metrics.soundness.num_statistical_validity_checks_passed: integer count (>= 0); higher is better relative to total.\n  - metrics.soundness.num_statistical_validity_checks_total: integer count (>= 0); used to compute pass rate.\n- Significance metrics:\n  - metrics.significance.clinical_biological_relevance: 0-1; higher is better.\n  - metrics.significance.clinical_relevance_score: 0-1; alias of clinical_biological_relevance; higher is better.\n  - metrics.significance.distance_to_prior_max: distance metric (>= 0); higher implies more novelty, compare within-run.\n  - metrics.significance.distance_to_prior_mean: distance metric (>= 0); higher implies more novelty, compare within-run.\n  - metrics.significance.distance_to_prior_min: distance metric (>= 0); higher implies more novelty, compare within-run.\n  - metrics.significance.effect_size_strength: 0-1; higher is better.\n- Originality metrics:\n  - metrics.originality.concept_entropy: higher indicates broader concept mixture.\n  - metrics.originality.concept_pair_rarity: higher indicates rarer concept combinations.\n  - metrics.originality.embedding_novelty_percentile: 0-100; higher is more novel.\n  - metrics.originality.hypothesis_overlap_jaccard: 0-1; lower is more novel.\n  - metrics.originality.mechanistic_novelty_flag: True/False; True indicates novelty.\n  - metrics.originality.methodological_novelty_flag: True/False; True indicates novelty.\n  - metrics.originality.semantic_novelty_knn_distance: >= 0; higher is more novel.\n\nDecision rationale requirement:\n- In your overall recommendation justification, explicitly reference the METRICS values\n  you used (include key metric names and values, not just qualitative paraphrases).\n- If a metric value is null/missing, do not invent a value; rely on available metrics\n  and state that a signal was missing.\n\nYou may adjust one point up/down from what the metrics alone suggest if your\nqualitative reading of the report strongly supports this, but you must always\nexplain these tensions in the text (especially in sections 3, 4, and 6).\n\nOverall score justification requirement:\n- After the Quantitative Ratings section, add 1-2 sentences that explicitly\n  justify the Overall Recommendation by citing the metric values you used\n  (e.g., \"Overall=3 because support.evidence_breadth_index=2, soundness.internal_consistency_score=0.55, originality.hypothesis_overlap_jaccard=0.62\").\n  Keep it concise and metric-grounded.\n\nInstructions:\n- Respond to all 7 qualitative sections in order (1-7).\n- Provide concise, well-structured text under each section.\n- Provide numerical ratings for each quantitative category at the end."
+ },
+ "snapshot": {
+  "iteration_1": {
+   "agent_registry_data.pkl": "pkl",
+   "archive_data.json": {
+    "max_k": "int",
+    "papers": [
+     {
+      "abstract": "str",
+      "citable_with_warnings": "bool",
+      "citation_compliant": "bool",
+      "citation_count": "int",
+      "citation_error_count": "int",
+      "citation_errors": [],
+      "citation_lint": {},
+      "cited_paper_ids": [],
+      "code_script": "str",
+      "collab_agent_ids": [
+       "str"
+      ],
+      "invalid_archive_refs": [],
+      "is_citable_archive_source": "bool",
+      "manuscript": "str",
+      "meta_claim_checks": {},
+      "meta_code_verified_major_claim_count": "int",
+      "meta_quality_fail_reasons": [],
+      "meta_quality_gate_status": "str",
+      "meta_research_source_paper_ids": [],
+      "meta_research_trigger_iteration": "NoneType",
+      "meta_revision_attempts": "int",
+      "meta_supported_claim_count": "int",
+      "meta_unresolved_uncertainty_claim_count": "int",
+      "meta_unsupported_claim_count": "int",
+      "metareview": {
+       "decision": "str",
+       "justification": "NoneType",
+       "meta_review_text": "str",
+       "overall_score": "float",
+       "paper_id": "str",
+       "rank": "str"
+      },
+      "paper_id": "str",
+      "paper_kind": "str",
+      "plot_artifacts": [],
+      "plot_filenames": [],
+      "plot_handle_to_filename": {},
+      "plot_handles": [],
+      "primary_agent_id": "str",
+      "publication_status": "str",
+      "publication_t": "int",
+      "research_phase": "str",
+      "research_session_id": "str",
+      "research_validation_status": "str",
+      "review_metrics": {
+       "originality": {
+        "concept_entropy": "float",
+        "concept_pair_rarity": "float",
+        "embedding_novelty_percentile": "NoneType",
+        "hypothesis_overlap_jaccard": "NoneType",
+        "mechanistic_novelty_flag": "bool",
+        "methodological_novelty_flag": "bool",
+        "semantic_novelty_knn_distance": "NoneType"
+       },
+       "significance": {
+        "clinical_biological_relevance": "float",
+        "clinical_relevance_score": "float",
+        "distance_to_prior_max": "NoneType",
+        "distance_to_prior_mean": "NoneType",
+        "distance_to_prior_min": "NoneType",
+        "effect_size_strength": "float"
+       },
+       "soundness": {
+        "diagnostic_validity_pass_rate": "float",
+        "internal_consistency_score": "float",
+        "num_statistical_validity_checks_passed": "int",
+        "num_statistical_validity_checks_total": "int"
+       },
+       "support": {
+        "analytical_depth": "int",
+        "claim_evidence_alignment_max_cosine": "float",
+        "evidence_breadth_index": "int",
+        "evidence_types_present": [
+         "str"
+        ],
+        "external_papers_read": "int",
+        "lines_of_code": "int",
+        "num_statistical_code_cells": "int",
+        "successful_code_executions": "int"
+       }
+      },
+      "status": "str",
+      "title": "str"
+     }
+    ],
+    "w_citation": "float",
+    "w_recency": "float",
+    "with_citation_boost": "bool",
+    "with_recency_boost": "bool"
+   },
+   "archive_data.pkl": "pkl",
+   "exp_config.yaml": "yaml",
+   "metrics.jsonl": {
+    "jsonl_first_row": {
+     "iteration": "int",
+     "metrics": {
+      "originality": {
+       "concept_entropy": "float",
+       "concept_pair_rarity": "float",
+       "embedding_novelty_percentile": "NoneType",
+       "hypothesis_overlap_jaccard": "NoneType",
+       "mechanistic_novelty_flag": "bool",
+       "methodological_novelty_flag": "bool",
+       "semantic_novelty_knn_distance": "NoneType"
+      },
+      "significance": {
+       "clinical_biological_relevance": "float",
+       "clinical_relevance_score": "float",
+       "distance_to_prior_max": "NoneType",
+       "distance_to_prior_mean": "NoneType",
+       "distance_to_prior_min": "NoneType",
+       "effect_size_strength": "float"
+      },
+      "soundness": {
+       "diagnostic_validity_pass_rate": "float",
+       "internal_consistency_score": "float",
+       "num_statistical_validity_checks_passed": "int",
+       "num_statistical_validity_checks_total": "int"
+      },
+      "support": {
+       "analytical_depth": "int",
+       "claim_evidence_alignment_max_cosine": "float",
+       "evidence_breadth_index": "int",
+       "evidence_types_present": [
+        "str"
+       ],
+       "external_papers_read": "int",
+       "lines_of_code": "int",
+       "num_statistical_code_cells": "int",
+       "successful_code_executions": "int"
+      }
+     },
+     "paper_id": "str",
+     "paper_title": "str",
+     "primary_agent_id": "str"
+    }
+   },
+   "notepad_data.json": {
+    "config": {
+     "base_snapshots_dir": "str",
+     "enabled": "bool",
+     "max_entries_per_agent": "int",
+     "max_entry_chars": "int"
+    },
+    "entries_by_agent": {},
+    "notepad_file_paths": {}
+   },
+   "notepad_data.pkl": "pkl",
+   "private_archive_data.json": {
+    "max_k": "int",
+    "papers": [
+     [
+      {
+       "abstract": "str",
+       "citable_with_warnings": "bool",
+       "citation_compliant": "bool",
+       "citation_count": "int",
+       "citation_error_count": "int",
+       "citation_errors": [],
+       "citation_lint": {},
+       "cited_paper_ids": [],
+       "code_script": "str",
+       "collab_agent_ids": [
+        "str"
+       ],
+       "invalid_archive_refs": [],
+       "is_citable_archive_source": "bool",
+       "manuscript": "str",
+       "meta_claim_checks": {},
+       "meta_code_verified_major_claim_count": "int",
+       "meta_quality_fail_reasons": [],
+       "meta_quality_gate_status": "str",
+       "meta_research_source_paper_ids": [],
+       "meta_research_trigger_iteration": "NoneType",
+       "meta_revision_attempts": "int",
+       "meta_supported_claim_count": "int",
+       "meta_unresolved_uncertainty_claim_count": "int",
+       "meta_unsupported_claim_count": "int",
+       "metareview": {
+        "decision": "str",
+        "justification": "NoneType",
+        "meta_review_text": "str",
+        "overall_score": "float",
+        "paper_id": "str",
+        "rank": "str"
+       },
+       "paper_id": "str",
+       "paper_kind": "str",
+       "plot_artifacts": [],
+       "plot_filenames": [],
+       "plot_handle_to_filename": {},
+       "plot_handles": [],
+       "primary_agent_id": "str",
+       "publication_status": "str",
+       "publication_t": "int",
+       "research_phase": "str",
+       "research_session_id": "str",
+       "research_validation_status": "str",
+       "review_metrics": {
+        "originality": {
+         "concept_entropy": "float",
+         "concept_pair_rarity": "float",
+         "embedding_novelty_percentile": "NoneType",
+         "hypothesis_overlap_jaccard": "NoneType",
+         "mechanistic_novelty_flag": "bool",
+         "methodological_novelty_flag": "bool",
+         "semantic_novelty_knn_distance": "NoneType"
+        },
+        "significance": {
+         "clinical_biological_relevance": "float",
+         "clinical_relevance_score": "float",
+         "distance_to_prior_max": "NoneType",
+         "distance_to_prior_mean": "NoneType",
+         "distance_to_prior_min": "NoneType",
+         "effect_size_strength": "float"
+        },
+        "soundness": {
+         "diagnostic_validity_pass_rate": "float",
+         "internal_consistency_score": "float",
+         "num_statistical_validity_checks_passed": "int",
+         "num_statistical_validity_checks_total": "int"
+        },
+        "support": {
+         "analytical_depth": "int",
+         "claim_evidence_alignment_max_cosine": "float",
+         "evidence_breadth_index": "int",
+         "evidence_types_present": [
+          "\u2026"
+         ],
+         "external_papers_read": "int",
+         "lines_of_code": "int",
+         "num_statistical_code_cells": "int",
+         "successful_code_executions": "int"
+        }
+       },
+       "status": "str",
+       "title": "str"
+      }
+     ]
+    ],
+    "review_assignments": {},
+    "reviews_by_paper": {
+     "paper_t01_agent_01": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_02": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_03": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_04": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_05": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ]
+    },
+    "w_citation": "float",
+    "w_recency": "float",
+    "with_citation_boost": "bool",
+    "with_recency_boost": "bool"
+   },
+   "private_archive_data.pkl": "pkl",
+   "ranker_pools/<json>": {
+    "counts": {
+     "all": "int",
+     "meta": "int",
+     "standard": "int"
+    },
+    "filters": {
+     "exclude_timeout": "bool",
+     "include_rejected": "bool"
+    },
+    "generated_at_utc": "str",
+    "iteration": "int",
+    "run_name": "str",
+    "schema_version": "int",
+    "source_files": [
+     "str"
+    ]
+   },
+   "ranker_pools/<jsonl>": {
+    "jsonl_first_row": {
+     "abstract": "str",
+     "citable_with_warnings": "bool",
+     "citation_compliant": "bool",
+     "citation_count": "int",
+     "citation_error_count": "int",
+     "citation_errors": [],
+     "citation_lint": {},
+     "cited_paper_ids": [],
+     "code_script": "str",
+     "collab_agent_ids": [
+      "str"
+     ],
+     "invalid_archive_refs": [],
+     "is_citable_archive_source": "bool",
+     "manuscript": "str",
+     "meta_claim_checks": {},
+     "meta_code_verified_major_claim_count": "int",
+     "meta_quality_fail_reasons": [],
+     "meta_quality_gate_status": "str",
+     "meta_research_source_paper_ids": [],
+     "meta_research_trigger_iteration": "NoneType",
+     "meta_revision_attempts": "int",
+     "meta_supported_claim_count": "int",
+     "meta_unresolved_uncertainty_claim_count": "int",
+     "meta_unsupported_claim_count": "int",
+     "metareview": {
+      "decision": "str",
+      "justification": "NoneType",
+      "meta_review_text": "str",
+      "overall_score": "float",
+      "paper_id": "str",
+      "rank": "str"
+     },
+     "paper_id": "str",
+     "paper_kind": "str",
+     "plot_artifacts": [],
+     "plot_filenames": [],
+     "plot_handle_to_filename": {},
+     "plot_handles": [],
+     "primary_agent_id": "str",
+     "publication_status": "str",
+     "publication_t": "int",
+     "research_phase": "str",
+     "research_session_id": "str",
+     "research_validation_status": "str",
+     "review_metrics": {
+      "originality": {
+       "concept_entropy": "float",
+       "concept_pair_rarity": "float",
+       "embedding_novelty_percentile": "NoneType",
+       "hypothesis_overlap_jaccard": "NoneType",
+       "mechanistic_novelty_flag": "bool",
+       "methodological_novelty_flag": "bool",
+       "semantic_novelty_knn_distance": "NoneType"
+      },
+      "significance": {
+       "clinical_biological_relevance": "float",
+       "clinical_relevance_score": "float",
+       "distance_to_prior_max": "NoneType",
+       "distance_to_prior_mean": "NoneType",
+       "distance_to_prior_min": "NoneType",
+       "effect_size_strength": "float"
+      },
+      "soundness": {
+       "diagnostic_validity_pass_rate": "float",
+       "internal_consistency_score": "float",
+       "num_statistical_validity_checks_passed": "int",
+       "num_statistical_validity_checks_total": "int"
+      },
+      "support": {
+       "analytical_depth": "int",
+       "claim_evidence_alignment_max_cosine": "float",
+       "evidence_breadth_index": "int",
+       "evidence_types_present": [
+        "str"
+       ],
+       "external_papers_read": "int",
+       "lines_of_code": "int",
+       "num_statistical_code_cells": "int",
+       "successful_code_executions": "int"
+      }
+     },
+     "status": "str",
+     "title": "str"
+    }
+   },
+   "session_stats_data.pkl": "pkl",
+   "snapshot_metadata.json": {
+    "citation_tags": {
+     "research": {
+      "citation_integrity": {
+       "accepted_noncompliant_count": "int",
+       "accepted_noncompliant_paper_ids": [],
+       "alerts": [],
+       "archive_edges_to_noncompliant_count": "int",
+       "archive_edges_total": "int",
+       "noncompliant_cited_paper_ids": [],
+       "papers_citing_noncompliant_count": "int",
+       "papers_citing_noncompliant_ids": []
+      },
+      "code_evidence_totals": {
+       "papers_with_code_tags": "int",
+       "papers_with_unbacked_code_tags": "int",
+       "total_code_tags": "int"
+      },
+      "entries": [
+       {
+        "citable_with_warnings": "bool",
+        "citation_compliant": "bool",
+        "citation_error_count": "int",
+        "citation_errors": [],
+        "cited_noncompliant_archive_ids": [],
+        "code_evidence": {
+         "code_script_chars": "int",
+         "code_tag_count": "int",
+         "errors": [],
+         "is_backed": "bool",
+         "successful_code_executions_current_iteration": "int"
+        },
+        "counts": {
+         "archive": "int",
+         "arxiv": "int",
+         "code": "int",
+         "invalid": "int",
+         "plot": "int",
+         "total": "int",
+         "valid": "int"
+        },
+        "errors": [],
+        "invalid_archive_refs": [],
+        "is_citable_archive_source": "bool",
+        "is_valid": "bool",
+        "paper_id": "str",
+        "primary_agent_id": "str",
+        "publication_status": "str",
+        "research_validation_status": "str",
+        "status": "str",
+        "tags": [
+         {
+          "error": "\u2026",
+          "raw": "\u2026",
+          "type": "\u2026",
+          "valid": "\u2026",
+          "value": "\u2026"
+         }
+        ]
+       }
+      ],
+      "strict_required": "bool",
+      "totals": {
+       "archive": "int",
+       "arxiv": "int",
+       "code": "int",
+       "invalid": "int",
+       "plot": "int",
+       "total": "int",
+       "valid": "int"
+      }
+     },
+     "review": {
+      "entries": [
+       {
+        "counts": {
+         "archive": "int",
+         "arxiv": "int",
+         "code": "int",
+         "invalid": "int",
+         "plot": "int",
+         "total": "int",
+         "valid": "int"
+        },
+        "errors": [],
+        "is_valid": "bool",
+        "paper_id": "str",
+        "reviewer_id": "str",
+        "tags": []
+       }
+      ],
+      "strict_required": "bool",
+      "totals": {
+       "archive": "int",
+       "arxiv": "int",
+       "code": "int",
+       "invalid": "int",
+       "plot": "int",
+       "total": "int",
+       "valid": "int"
+      }
+     },
+     "schema": {
+      "archive": "str",
+      "arxiv": "str",
+      "code": "str"
+     },
+     "trust_policy": {
+      "accepted_noncompliant_are_citable": "bool",
+      "archive_citable_if": "str",
+      "note": "str"
+     }
+    },
+    "files_saved": [
+     "str"
+    ],
+    "iteration": "int",
+    "num_agents": "int",
+    "num_papers_public": "int",
+    "run_name": "str",
+    "snapshot_created_at": "str",
+    "timestamp": "str"
+   },
+   "timelines/<jsonl>": {
+    "jsonl_first_row": {
+     "iteration": "int",
+     "kind": "str",
+     "messages": [
+      "str"
+     ],
+     "paper_id": "str",
+     "response": "str",
+     "reviewer_id": "str",
+     "step": "int",
+     "ts": "float"
+    }
+   }
+  },
+  "iteration_2": {
+   "agent_registry_data.pkl": "pkl",
+   "archive_data.json": {
+    "max_k": "int",
+    "papers": [
+     {
+      "abstract": "str",
+      "citable_with_warnings": "bool",
+      "citation_compliant": "bool",
+      "citation_count": "int",
+      "citation_error_count": "int",
+      "citation_errors": [],
+      "citation_lint": {},
+      "cited_paper_ids": [],
+      "code_script": "str",
+      "collab_agent_ids": [
+       "str"
+      ],
+      "invalid_archive_refs": [],
+      "is_citable_archive_source": "bool",
+      "manuscript": "str",
+      "meta_claim_checks": {},
+      "meta_code_verified_major_claim_count": "int",
+      "meta_quality_fail_reasons": [],
+      "meta_quality_gate_status": "str",
+      "meta_research_source_paper_ids": [],
+      "meta_research_trigger_iteration": "NoneType",
+      "meta_revision_attempts": "int",
+      "meta_supported_claim_count": "int",
+      "meta_unresolved_uncertainty_claim_count": "int",
+      "meta_unsupported_claim_count": "int",
+      "metareview": {
+       "decision": "str",
+       "justification": "NoneType",
+       "meta_review_text": "str",
+       "overall_score": "float",
+       "paper_id": "str",
+       "rank": "str"
+      },
+      "paper_id": "str",
+      "paper_kind": "str",
+      "plot_artifacts": [],
+      "plot_filenames": [],
+      "plot_handle_to_filename": {},
+      "plot_handles": [],
+      "primary_agent_id": "str",
+      "publication_status": "str",
+      "publication_t": "int",
+      "research_phase": "str",
+      "research_session_id": "str",
+      "research_validation_status": "str",
+      "review_metrics": {
+       "originality": {
+        "concept_entropy": "float",
+        "concept_pair_rarity": "float",
+        "embedding_novelty_percentile": "NoneType",
+        "hypothesis_overlap_jaccard": "NoneType",
+        "mechanistic_novelty_flag": "bool",
+        "methodological_novelty_flag": "bool",
+        "semantic_novelty_knn_distance": "NoneType"
+       },
+       "significance": {
+        "clinical_biological_relevance": "float",
+        "clinical_relevance_score": "float",
+        "distance_to_prior_max": "NoneType",
+        "distance_to_prior_mean": "NoneType",
+        "distance_to_prior_min": "NoneType",
+        "effect_size_strength": "float"
+       },
+       "soundness": {
+        "diagnostic_validity_pass_rate": "float",
+        "internal_consistency_score": "float",
+        "num_statistical_validity_checks_passed": "int",
+        "num_statistical_validity_checks_total": "int"
+       },
+       "support": {
+        "analytical_depth": "int",
+        "claim_evidence_alignment_max_cosine": "float",
+        "evidence_breadth_index": "int",
+        "evidence_types_present": [
+         "str"
+        ],
+        "external_papers_read": "int",
+        "lines_of_code": "int",
+        "num_statistical_code_cells": "int",
+        "successful_code_executions": "int"
+       }
+      },
+      "status": "str",
+      "title": "str"
+     }
+    ],
+    "w_citation": "float",
+    "w_recency": "float",
+    "with_citation_boost": "bool",
+    "with_recency_boost": "bool"
+   },
+   "archive_data.pkl": "pkl",
+   "exp_config.yaml": "yaml",
+   "metrics.jsonl": {
+    "jsonl_first_row": {
+     "iteration": "int",
+     "metrics": {
+      "originality": {
+       "concept_entropy": "float",
+       "concept_pair_rarity": "float",
+       "embedding_novelty_percentile": "NoneType",
+       "hypothesis_overlap_jaccard": "float",
+       "mechanistic_novelty_flag": "bool",
+       "methodological_novelty_flag": "bool",
+       "semantic_novelty_knn_distance": "NoneType"
+      },
+      "significance": {
+       "clinical_biological_relevance": "float",
+       "clinical_relevance_score": "float",
+       "distance_to_prior_max": "NoneType",
+       "distance_to_prior_mean": "NoneType",
+       "distance_to_prior_min": "NoneType",
+       "effect_size_strength": "float"
+      },
+      "soundness": {
+       "diagnostic_validity_pass_rate": "float",
+       "internal_consistency_score": "float",
+       "num_statistical_validity_checks_passed": "int",
+       "num_statistical_validity_checks_total": "int"
+      },
+      "support": {
+       "analytical_depth": "int",
+       "claim_evidence_alignment_max_cosine": "float",
+       "evidence_breadth_index": "int",
+       "evidence_types_present": [
+        "str"
+       ],
+       "external_papers_read": "int",
+       "lines_of_code": "int",
+       "num_statistical_code_cells": "int",
+       "successful_code_executions": "int"
+      }
+     },
+     "paper_id": "str",
+     "paper_title": "str",
+     "primary_agent_id": "str"
+    }
+   },
+   "notepad_data.json": {
+    "config": {
+     "base_snapshots_dir": "str",
+     "enabled": "bool",
+     "max_entries_per_agent": "int",
+     "max_entry_chars": "int"
+    },
+    "entries_by_agent": {},
+    "notepad_file_paths": {}
+   },
+   "notepad_data.pkl": "pkl",
+   "private_archive_data.json": {
+    "max_k": "int",
+    "papers": [
+     [
+      {
+       "abstract": "str",
+       "citable_with_warnings": "bool",
+       "citation_compliant": "bool",
+       "citation_count": "int",
+       "citation_error_count": "int",
+       "citation_errors": [],
+       "citation_lint": {},
+       "cited_paper_ids": [],
+       "code_script": "str",
+       "collab_agent_ids": [
+        "str"
+       ],
+       "invalid_archive_refs": [],
+       "is_citable_archive_source": "bool",
+       "manuscript": "str",
+       "meta_claim_checks": {},
+       "meta_code_verified_major_claim_count": "int",
+       "meta_quality_fail_reasons": [],
+       "meta_quality_gate_status": "str",
+       "meta_research_source_paper_ids": [],
+       "meta_research_trigger_iteration": "NoneType",
+       "meta_revision_attempts": "int",
+       "meta_supported_claim_count": "int",
+       "meta_unresolved_uncertainty_claim_count": "int",
+       "meta_unsupported_claim_count": "int",
+       "metareview": {
+        "decision": "str",
+        "justification": "NoneType",
+        "meta_review_text": "str",
+        "overall_score": "float",
+        "paper_id": "str",
+        "rank": "str"
+       },
+       "paper_id": "str",
+       "paper_kind": "str",
+       "plot_artifacts": [],
+       "plot_filenames": [],
+       "plot_handle_to_filename": {},
+       "plot_handles": [],
+       "primary_agent_id": "str",
+       "publication_status": "str",
+       "publication_t": "int",
+       "research_phase": "str",
+       "research_session_id": "str",
+       "research_validation_status": "str",
+       "review_metrics": {
+        "originality": {
+         "concept_entropy": "float",
+         "concept_pair_rarity": "float",
+         "embedding_novelty_percentile": "NoneType",
+         "hypothesis_overlap_jaccard": "NoneType",
+         "mechanistic_novelty_flag": "bool",
+         "methodological_novelty_flag": "bool",
+         "semantic_novelty_knn_distance": "NoneType"
+        },
+        "significance": {
+         "clinical_biological_relevance": "float",
+         "clinical_relevance_score": "float",
+         "distance_to_prior_max": "NoneType",
+         "distance_to_prior_mean": "NoneType",
+         "distance_to_prior_min": "NoneType",
+         "effect_size_strength": "float"
+        },
+        "soundness": {
+         "diagnostic_validity_pass_rate": "float",
+         "internal_consistency_score": "float",
+         "num_statistical_validity_checks_passed": "int",
+         "num_statistical_validity_checks_total": "int"
+        },
+        "support": {
+         "analytical_depth": "int",
+         "claim_evidence_alignment_max_cosine": "float",
+         "evidence_breadth_index": "int",
+         "evidence_types_present": [
+          "\u2026"
+         ],
+         "external_papers_read": "int",
+         "lines_of_code": "int",
+         "num_statistical_code_cells": "int",
+         "successful_code_executions": "int"
+        }
+       },
+       "status": "str",
+       "title": "str"
+      }
+     ]
+    ],
+    "review_assignments": {},
+    "reviews_by_paper": {
+     "paper_t01_agent_01": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_02": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_03": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_04": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t01_agent_05": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t02_agent_01": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t02_agent_02": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t02_agent_03": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t02_agent_04": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ],
+     "paper_t02_agent_05": [
+      {
+       "iteration": "int",
+       "review_text": "str",
+       "reviewer_id": "str",
+       "scores": {
+        "Originality": "float",
+        "Overall Recommendation": "float",
+        "Significance": "float",
+        "Soundness": "float",
+        "Support": "float"
+       }
+      }
+     ]
+    },
+    "w_citation": "float",
+    "w_recency": "float",
+    "with_citation_boost": "bool",
+    "with_recency_boost": "bool"
+   },
+   "private_archive_data.pkl": "pkl",
+   "ranker_pools/<json>": {
+    "counts": {
+     "all": "int",
+     "meta": "int",
+     "standard": "int"
+    },
+    "filters": {
+     "exclude_timeout": "bool",
+     "include_rejected": "bool"
+    },
+    "generated_at_utc": "str",
+    "iteration": "int",
+    "run_name": "str",
+    "schema_version": "int",
+    "source_files": [
+     "str"
+    ]
+   },
+   "ranker_pools/<jsonl>": {
+    "jsonl_first_row": {
+     "abstract": "str",
+     "citable_with_warnings": "bool",
+     "citation_compliant": "bool",
+     "citation_count": "int",
+     "citation_error_count": "int",
+     "citation_errors": [],
+     "citation_lint": {},
+     "cited_paper_ids": [],
+     "code_script": "str",
+     "collab_agent_ids": [
+      "str"
+     ],
+     "invalid_archive_refs": [],
+     "is_citable_archive_source": "bool",
+     "manuscript": "str",
+     "meta_claim_checks": {},
+     "meta_code_verified_major_claim_count": "int",
+     "meta_quality_fail_reasons": [],
+     "meta_quality_gate_status": "str",
+     "meta_research_source_paper_ids": [],
+     "meta_research_trigger_iteration": "NoneType",
+     "meta_revision_attempts": "int",
+     "meta_supported_claim_count": "int",
+     "meta_unresolved_uncertainty_claim_count": "int",
+     "meta_unsupported_claim_count": "int",
+     "metareview": {
+      "decision": "str",
+      "justification": "NoneType",
+      "meta_review_text": "str",
+      "overall_score": "float",
+      "paper_id": "str",
+      "rank": "str"
+     },
+     "paper_id": "str",
+     "paper_kind": "str",
+     "plot_artifacts": [],
+     "plot_filenames": [],
+     "plot_handle_to_filename": {},
+     "plot_handles": [],
+     "primary_agent_id": "str",
+     "publication_status": "str",
+     "publication_t": "int",
+     "research_phase": "str",
+     "research_session_id": "str",
+     "research_validation_status": "str",
+     "review_metrics": {
+      "originality": {
+       "concept_entropy": "float",
+       "concept_pair_rarity": "float",
+       "embedding_novelty_percentile": "NoneType",
+       "hypothesis_overlap_jaccard": "NoneType",
+       "mechanistic_novelty_flag": "bool",
+       "methodological_novelty_flag": "bool",
+       "semantic_novelty_knn_distance": "NoneType"
+      },
+      "significance": {
+       "clinical_biological_relevance": "float",
+       "clinical_relevance_score": "float",
+       "distance_to_prior_max": "NoneType",
+       "distance_to_prior_mean": "NoneType",
+       "distance_to_prior_min": "NoneType",
+       "effect_size_strength": "float"
+      },
+      "soundness": {
+       "diagnostic_validity_pass_rate": "float",
+       "internal_consistency_score": "float",
+       "num_statistical_validity_checks_passed": "int",
+       "num_statistical_validity_checks_total": "int"
+      },
+      "support": {
+       "analytical_depth": "int",
+       "claim_evidence_alignment_max_cosine": "float",
+       "evidence_breadth_index": "int",
+       "evidence_types_present": [
+        "str"
+       ],
+       "external_papers_read": "int",
+       "lines_of_code": "int",
+       "num_statistical_code_cells": "int",
+       "successful_code_executions": "int"
+      }
+     },
+     "status": "str",
+     "title": "str"
+    }
+   },
+   "session_stats_data.pkl": "pkl",
+   "snapshot_metadata.json": {
+    "citation_tags": {
+     "research": {
+      "citation_integrity": {
+       "accepted_noncompliant_count": "int",
+       "accepted_noncompliant_paper_ids": [],
+       "alerts": [],
+       "archive_edges_to_noncompliant_count": "int",
+       "archive_edges_total": "int",
+       "noncompliant_cited_paper_ids": [],
+       "papers_citing_noncompliant_count": "int",
+       "papers_citing_noncompliant_ids": []
+      },
+      "code_evidence_totals": {
+       "papers_with_code_tags": "int",
+       "papers_with_unbacked_code_tags": "int",
+       "total_code_tags": "int"
+      },
+      "entries": [
+       {
+        "citable_with_warnings": "bool",
+        "citation_compliant": "bool",
+        "citation_error_count": "int",
+        "citation_errors": [],
+        "cited_noncompliant_archive_ids": [],
+        "code_evidence": {
+         "code_script_chars": "int",
+         "code_tag_count": "int",
+         "errors": [],
+         "is_backed": "bool",
+         "successful_code_executions_current_iteration": "int"
+        },
+        "counts": {
+         "archive": "int",
+         "arxiv": "int",
+         "code": "int",
+         "invalid": "int",
+         "plot": "int",
+         "total": "int",
+         "valid": "int"
+        },
+        "errors": [],
+        "invalid_archive_refs": [],
+        "is_citable_archive_source": "bool",
+        "is_valid": "bool",
+        "paper_id": "str",
+        "primary_agent_id": "str",
+        "publication_status": "str",
+        "research_validation_status": "str",
+        "status": "str",
+        "tags": [
+         {
+          "error": "\u2026",
+          "raw": "\u2026",
+          "type": "\u2026",
+          "valid": "\u2026",
+          "value": "\u2026"
+         }
+        ]
+       }
+      ],
+      "strict_required": "bool",
+      "totals": {
+       "archive": "int",
+       "arxiv": "int",
+       "code": "int",
+       "invalid": "int",
+       "plot": "int",
+       "total": "int",
+       "valid": "int"
+      }
+     },
+     "review": {
+      "entries": [
+       {
+        "counts": {
+         "archive": "int",
+         "arxiv": "int",
+         "code": "int",
+         "invalid": "int",
+         "plot": "int",
+         "total": "int",
+         "valid": "int"
+        },
+        "errors": [],
+        "is_valid": "bool",
+        "paper_id": "str",
+        "reviewer_id": "str",
+        "tags": []
+       }
+      ],
+      "strict_required": "bool",
+      "totals": {
+       "archive": "int",
+       "arxiv": "int",
+       "code": "int",
+       "invalid": "int",
+       "plot": "int",
+       "total": "int",
+       "valid": "int"
+      }
+     },
+     "schema": {
+      "archive": "str",
+      "arxiv": "str",
+      "code": "str"
+     },
+     "trust_policy": {
+      "accepted_noncompliant_are_citable": "bool",
+      "archive_citable_if": "str",
+      "note": "str"
+     }
+    },
+    "files_saved": [
+     "str"
+    ],
+    "iteration": "int",
+    "num_agents": "int",
+    "num_papers_public": "int",
+    "run_name": "str",
+    "snapshot_created_at": "str",
+    "timestamp": "str"
+   },
+   "timelines/<jsonl>": {
+    "jsonl_first_row": {
+     "iteration": "int",
+     "kind": "str",
+     "messages": [
+      "str"
+     ],
+     "paper_id": "str",
+     "response": "str",
+     "reviewer_id": "str",
+     "step": "int",
+     "ts": "float"
+    }
+   }
+  }
+ }
+}

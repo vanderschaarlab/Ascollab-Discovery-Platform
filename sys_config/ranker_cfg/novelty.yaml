@@ -1,0 +1,9 @@
+defaults:
+  - default
+  - _self_
+
+criteria_prompt: |
+  Compare the two papers exclusively on the following dimension:
+  **Novelty (Originality)**.
+
+  Evaluate the conceptual uniqueness of the papers, compared to your best knowledge of the relevant scientific field.

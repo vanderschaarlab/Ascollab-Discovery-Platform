@@ -1,0 +1,10 @@
+# @package discovery_dataset
+# TCGA pancreatic adenocarcinoma (PAAD), from UCSC Xena.
+# Select with `dataset=paad`; see docs/data.md for getting the files.
+# Each key is a dataset description in env_setup/datasets.py.
+target: tcga # goal and Python package set (env_setup/goals.py, env_setup/packages.py)
+dataset_keys:
+  - tcga_paad_hiseqv2
+  - tcga_paad_rppa
+  - tcga_paad_merged_reals
+  - tcga_paad_survival

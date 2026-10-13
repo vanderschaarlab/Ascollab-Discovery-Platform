@@ -1,0 +1,5 @@
+# norm_a (novelty-first; experiment 09). Injected verbatim into every reviewer prompt.
+# Compose with: +review_norm@review.norm_prompt=norm_a_novelty
+enabled: true
+label: norm_a_novelty
+text: "prioritize papers that are potentially groundbreaking even if it is not strongly supported"

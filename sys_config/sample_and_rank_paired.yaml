@@ -1,0 +1,69 @@
+defaults:
+  - sample_and_rank_base
+  - _self_
+  - ranker_cfg@ranker: default
+  - optional llm_api@endpoints.llm_primary: default
+  - optional llm_api@endpoints.gpt5: gpt-5
+  - optional llm_api@endpoints.gpt5-high: gpt-5-high
+  # The pipeline's other backends, so that any of them can be the judge (ranker.llm_backend).
+  - optional llm_api@endpoints.gpt4o: gpt-4o
+  - optional llm_api@endpoints.deepseek: deepseek
+  - optional llm_api@endpoints.llama: llama
+
+hydra:
+  run:
+    dir: outputs/_sample_and_rank_paired/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+exp_name: sample_and_rank_paired
+
+# ── Experiment definitions (paired-specific) ──────────────────────────
+experiments:
+  experiment_a:
+    label: "experiment_a"       # Human-friendly label for results/filtering
+    snapshot_dirs:
+      - "snapshots/run_a_seed_1"
+      # - "snapshots/run_a_seed_2"
+  experiment_b:
+    label: "experiment_b"
+    snapshot_dirs:
+      - "snapshots/run_b_seed_1"
+
+# ── Paper selection — paired-specific additions ────────────────────────
+# Base settings (iterations, cumulative, include_rejected, exclude_timeout)
+# are inherited from sample_and_rank_base.
+paper_selection:
+  # Optional global pool filter. Values: all | standard_only | meta_only.
+  paper_kind_filter: all
+  # Optional paired overrides. When set, these override paper_kind_filter
+  # for each side independently.
+  paper_kind_filter_a: null
+  paper_kind_filter_b: null
+
+  # Select top N papers by metareview overall_score from each experiment.
+  # In the paired pipeline this is applied per-experiment, before balance.
+  top_n:
+    enabled: false
+    n: 10
+    per_iteration: false   # when true, top-N is applied per iteration
+
+  # Equalize paper counts when the two experiments have different numbers of
+  # papers.  Applied after top_n.  (Paired-only setting.)
+  balance:
+    enabled: false
+    # "random"         = randomly sample from the larger set
+    # "top_metareview" = keep the best by metareview overall_score from the larger set
+    method: "random"
+    seed: ${SEED}
+
+# ── Pair sampling ───────────────────────────────────────────────────────
+# Not in base: same keys as non-paired but different semantics.
+# Here pairs are drawn from the Cartesian product P_A x P_B (cross-experiment).
+sampling:
+  # "all" = full Cartesian product (P_A x P_B), each repeated n_repeats times.
+  # "random" = sample n_pairs uniformly from the Cartesian product.
+  mode: "all"
+  n_repeats: 1             # mode="all" only. Repeat each unique pair this many times.
+  n_pairs: 100             # mode="random" only. Total pairs to sample.
+  with_replacement: false   # mode="random" only. Allow sampling the same pair more than once.
+  cap_n_pairs: false        # mode="random", no replacement: if fewer pairs exist, judge them all.
+  seed: ${SEED}             # RNG seed for reproducibility (pair sampling + A/B randomization).

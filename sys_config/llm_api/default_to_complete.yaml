@@ -1,0 +1,26 @@
+# Template for one chat-model endpoint. See docs/models.md.
+#
+# Copy this file to the name the config expects (default.yaml for the primary model; gpt-4o.yaml,
+# gpt-5.yaml, deepseek.yaml, llama.yaml for research backends; gpt-5-high.yaml for the ranker
+# judge) and fill it in. Only create the files your run uses. Never commit the copies: they hold
+# keys, and .gitignore excludes them.
+provider: azure # azure | openai (any OpenAI-compatible server)
+
+# provider: azure
+azure_deployment: # deployment name, e.g. gpt-5 (also selects the sampling settings below)
+azure_endpoint: # e.g. https://<resource>.openai.azure.com/
+api_version: 2024-12-01-preview # an API version your Azure resource supports
+
+# provider: openai
+# model: # model name, e.g. gpt-5 or meta-llama-3.1-70b-instruct
+# base_url: # optional; e.g. a self-hosted OpenAI-compatible server
+
+# Paste the key below, or read it from the environment: api_key: ${oc.env:AZURE_OPENAI_API_KEY}
+api_key:
+seed: ${SEED}
+temperature: 0.4 # sent to GPT-4o-family models only
+top_p: 0.9 # sent to GPT-4o-family models only
+max_tokens: null # sent to GPT-4o-family models only
+# reasoning_effort: high # GPT-5-family models only (the ranker judge uses high)
+max_retries: 3
+timeout: 600 # seconds per request

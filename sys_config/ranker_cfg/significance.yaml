@@ -1,0 +1,9 @@
+defaults:
+  - default
+  - _self_
+
+criteria_prompt: |
+  Compare the two papers exclusively on the following dimension:
+  **Significance (Impact)**.
+
+  Evaluate the potential scientific value and broader importance of the work to the relevant scientific field.

@@ -1,0 +1,38 @@
+# Host environment: the pipeline, the sandbox server (server_docker.py), the ranker and the
+# analysis scripts. Python 3.11. Versions are the ones the test suite runs with; ~= allows patch
+# releases. The sandbox image has its own list: sandbox/server_requirements.txt.
+
+# Agents, LLM clients, retrieval
+langchain-core~=1.3.3
+langchain-community~=0.4.1
+langchain-openai~=1.2.1
+langgraph~=1.1.10
+langsmith~=0.8.3
+openai~=2.36.0
+faiss-cpu~=1.13.2
+arxiv~=3.0.0
+
+# Configuration
+hydra-core~=1.3.2
+omegaconf~=2.3.0
+PyYAML~=6.0.3
+pydantic~=2.13.4
+pydantic-settings~=2.14.1
+typing_extensions~=4.15.0
+
+# Data, analysis and the expert-validation notebooks
+numpy~=2.4.4
+pandas~=2.3.3
+plotly~=6.7.0
+matplotlib~=3.10.9
+scipy~=1.17.1
+
+# Sandbox server and HTTP
+docker~=7.1.0
+Flask~=3.1.3
+gunicorn~=26.0.0
+requests~=2.33.1
+urllib3~=2.7.0
+
+# Console output
+rich~=15.0.0

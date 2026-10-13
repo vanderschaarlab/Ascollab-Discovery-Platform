@@ -1,0 +1,49 @@
+defaults:
+  - sample_and_rank_base
+  - _self_
+  - ranker_cfg@ranker: default
+  - optional llm_api@endpoints.llm_primary: default
+  - optional llm_api@endpoints.gpt5: gpt-5
+  - optional llm_api@endpoints.gpt5-high: gpt-5-high
+  # The pipeline's other backends, so that any of them can be the judge (ranker.llm_backend).
+  - optional llm_api@endpoints.gpt4o: gpt-4o
+  - optional llm_api@endpoints.deepseek: deepseek
+  - optional llm_api@endpoints.llama: llama
+
+hydra:
+  run:
+    dir: outputs/_sample_and_rank_non_paired/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+exp_name: sample_and_rank_non_paired
+
+# ── Paper pool definition (non-paired) ─────────────────────────────────
+paper_pool:
+  label: "paper_pool"             # Human-friendly label for results
+  snapshot_dirs:
+    - "snapshots/run_seed_1"
+    # - "snapshots/run_seed_2"
+
+# ── Paper selection — non-paired-specific additions ────────────────────
+# Base settings (iterations, cumulative, include_rejected, exclude_timeout)
+# are inherited from sample_and_rank_base.
+paper_selection:
+  # Select top N papers by metareview overall_score from the pool.
+  # In the non-paired pipeline this is applied to the single unified pool.
+  top_n:
+    enabled: false
+    n: 10
+    per_iteration: false   # when true, top-N is applied per iteration
+  # No balance — single pool, not applicable.
+
+# ── Pair sampling ───────────────────────────────────────────────────────
+# Not in base: same keys as paired but different semantics.
+# Here pairs are drawn from C(n,2) combinations within a single pool.
+sampling:
+  # "all" = all C(n,2) unique unordered pairs, each repeated n_repeats times.
+  # "random" = sample n_pairs uniformly from the valid pair pool.
+  mode: "all"
+  n_repeats: 1               # mode="all" only. Repeat each unique pair this many times.
+  n_pairs: 100               # mode="random" only. Total pairs to sample.
+  with_replacement: false     # mode="random" only. Allow sampling the same pair more than once.
+  allow_self_comparison: false  # Non-paired-specific: allow comparing a paper with itself.
+  seed: ${SEED}               # RNG seed for reproducibility (pair sampling + A/B randomization).

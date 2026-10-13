@@ -1,0 +1,25 @@
+# Shared base configuration for sample-and-rank pipelines.
+# Do NOT use this file directly — use sample_and_rank_paired or
+# sample_and_rank_non_paired as the Hydra config_name.
+
+SEED: 42
+run_name: ${exp_name}_${now:%y%m%d_%H%M}
+
+# ── Paper selection (pre-filtering before pair generation) ─────────────
+# Pipeline-specific keys (top_n, balance) live in the derived configs;
+# only universally-shared settings belong here.
+paper_selection:
+  # Iteration selection — applied uniformly to all snapshot folders.
+  # Values: "last" (default), "all", or an explicit list like [1, 3, 5].
+  iterations: "last"
+  # If true, include all papers up to and including the selected iteration
+  # (publication_t <= N) rather than only papers from that exact iteration.
+  cumulative: true
+
+  include_rejected: false     # Include rejected papers from private archive
+  exclude_timeout: true       # Exclude timed-out papers (detected by paper_id suffix or TIMEOUT manuscript)
+  paper_kind_filter: all      # all | standard_only | meta_only
+
+# ── Parallelism ─────────────────────────────────────────────────────────
+parallelism:
+  max_workers: 4       # Max concurrent ranker invocations (ThreadPoolExecutor).

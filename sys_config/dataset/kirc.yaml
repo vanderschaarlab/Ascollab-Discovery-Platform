@@ -1,0 +1,10 @@
+# @package discovery_dataset
+# TCGA kidney renal clear cell carcinoma (KIRC), from UCSC Xena.
+# Select with `dataset=kirc`; see docs/data.md for getting the files.
+# Each key is a dataset description in env_setup/datasets.py.
+target: tcga # goal and Python package set (env_setup/goals.py, env_setup/packages.py)
+dataset_keys:
+  - tcga_kirc_neurips_hiseqv2
+  - tcga_kirc_neurips_rppa
+  - tcga_kirc_neurips_merged_reals
+  - tcga_kirc_neurips_survival

@@ -1,0 +1,15 @@
+defaults:
+  - default
+  - _self_
+
+mode: hypothesis_similarity
+
+criteria_prompt: |
+  Determine whether the two papers test the same hypothesis or different hypotheses.
+
+  Two hypotheses should be considered "the same" if they address the same core
+  research question and test the same causal or relational claim, even if the
+  specific methods, datasets, or experimental details differ.
+
+  Two hypotheses should be considered "different" if they address fundamentally
+  different research questions or test different causal/relational claims.

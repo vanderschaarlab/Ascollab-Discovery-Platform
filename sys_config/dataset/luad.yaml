@@ -1,0 +1,10 @@
+# @package discovery_dataset
+# TCGA lung adenocarcinoma (LUAD), from UCSC Xena.
+# Select with `dataset=luad`; see docs/data.md for getting the files.
+# Each key is a dataset description in env_setup/datasets.py.
+target: tcga # goal and Python package set (env_setup/goals.py, env_setup/packages.py)
+dataset_keys:
+  - tcga_luad_hiseqv2
+  - tcga_luad_rppa
+  - tcga_luad_merged_reals
+  - tcga_luad_survival

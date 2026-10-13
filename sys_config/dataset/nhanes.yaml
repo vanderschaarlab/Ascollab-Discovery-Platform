@@ -1,0 +1,8 @@
+# @package discovery_dataset
+# NHANES with myocardial-infarction GWAS genes (FinnGen finn-b-I9_MI).
+# Select with `dataset=nhanes`; see docs/data.md for getting the files.
+# Each key is a dataset description in env_setup/datasets.py.
+target: tcga # goal and Python package set (env_setup/goals.py, env_setup/packages.py)
+dataset_keys:
+  - nhanes
+  - mi_gwas_genes

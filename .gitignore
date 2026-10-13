@@ -1,0 +1,42 @@
+# Python and tooling
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv*/
+.conda*/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+.ipynb_checkpoints/
+build/
+dist/
+*.log
+*.swp
+
+# Editors and agents
+.vscode/
+.idea/
+.DS_Store
+.claude/
+.codex
+.agents/
+.dev/
+
+# Model endpoint files hold API keys: only the templates are tracked.
+sys_config/llm_api/*
+!sys_config/llm_api/default_to_complete.yaml
+sys_config/embedder_api/*
+!sys_config/embedder_api/default_to_complete.yaml
+.env
+
+# Run outputs and data (never committed)
+/outputs/
+/snapshots/
+/artifacts/
+/sandbox/datasets
+/data/
+/figures/
+/plots/
+/results/

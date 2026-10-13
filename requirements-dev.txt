@@ -1,0 +1,15 @@
+# Development and CI: tests, linters, type checking, hooks. Install with requirements.txt.
+# Exact versions, so the hooks (and the pydoclint baseline) give the same result everywhere.
+pytest==9.0.3
+pytest-cov==7.1.0
+nbformat==5.11.1
+ruff==0.15.12
+mypy==1.20.2
+types-PyYAML==6.0.12.20260508
+types-requests==2.33.0.20260508
+types-psutil==7.2.2.20260508
+pre-commit==4.6.0
+pre-commit-hooks==6.0.0
+interrogate==1.7.0
+pydoclint==0.8.3
+nbstripout==0.9.1

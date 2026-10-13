@@ -1,0 +1,18 @@
+# SHA-256 of the TCGA files as served by the UCSC Xena hub (tcga.xenahubs.net), keyed by their path
+# under the datasets directory. Checked by scripts/data/download_tcga.py and by the dataset
+# preflight before every run (data.preflight); with data.preflight_strict a mismatch stops the
+# run, otherwise it is logged. The copies used for the paper are
+# byte-identical, except that their survival tables lack Xena's final newline (same data), so
+# those three entries list both versions: [Xena, paper copy].
+KIRC_NeurIPS/merge_merged_reals_KIRC_merge_merged_reals.txt.gz: a8c6c5495bde54bb704a3e5add99d28ac0ab183a701eef86d58ad8f0caba3d78
+KIRC_NeurIPS/survival_FKIRC_survival.txt: [13538e5d6ed53ef6e4975a8e3c9f20bf26eb818348a73aa72ef9746ad1f2bdff, 53784ade21991114e0bdcbab29f08ddd4d9cda63b1d83dd0b7aa15e42a6e278e]
+KIRC_NeurIPS/TCGA.KIRC.sampleMap_HiSeqV2.gz: 17717853fc21d4f0e40239827a01e73486a61ab47def732b29999f0667a3b6da
+KIRC_NeurIPS/TCGA.KIRC.sampleMap_RPPA.gz: 1e98e85739b65d7d26b26a26410500f15e94685f325ad5d6aa3bef759c5f13c9
+lung_cancer/merge_merged_reals_LUAD_merge_merged_reals.txt.gz: a26bad331fc0b7a77016247bc3daeb2cf5fe372df5959bee53160083d67622de
+lung_cancer/survival_FLUAD_survival.txt: [224589c8088c56804e871d91062259afabfab6ceebab952c3837e6209d78e115, fc0fe26906703fc2d6b7495bd94cc3434222e20552379421bdf2dac121d684ff]
+lung_cancer/TCGA.LUAD.sampleMap_HiSeqV2.gz: 5432e5a67fc4c4fd6ca22f76f18494756f0e8409a8969df3157935f39947aa00
+lung_cancer/TCGA.LUAD.sampleMap_RPPA.gz: ef2444adb03c67d2e584bb5b3f3b1bd8f8163fbf02f56d5f2f8df3a862cbcab1
+PAAD/merge_merged_reals_PAAD_merge_merged_reals.txt.gz: 5b27baef1e8c64d61d61012afd7b4f7004e9e508fa6b00eb47a677d47538f247
+PAAD/survival_FPAAD_survival.txt: [a137be26f7ef131994900486ccac5bd976d953664c01af9892a0386d54c2d915, 462c09972a09224995e4de9fb8f5428816e3ce219ba86209aafdc388757e5855]
+PAAD/TCGA.PAAD.sampleMap_HiSeqV2.gz: 438763ca92e0e494cdd88f7cc8d5329eedc5199aced8c27e7fdacb8345b24c09
+PAAD/TCGA.PAAD.sampleMap_RPPA.gz: 4a7fee04c384b5779a9007ba49b201012c5dd2126d0bf05bb885cdfd627ebbbe

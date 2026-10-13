@@ -1,0 +1,5 @@
+# norm_b (soundness-first; experiment 09). Injected verbatim into every reviewer prompt.
+# Compose with: +review_norm@review.norm_prompt=norm_b_soundness
+enabled: true
+label: norm_b_soundness
+text: "prioritize papers with sound empirical support"

@@ -1,0 +1,153 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+    ".agents",
+    ".vscode",
+    "Ranker_Validation_Experiment",
+    "notebooks",
+    "outputs",
+    "snapshots",
+]
+
+[tool.ruff.lint]
+select = [
+    "B",
+    "C4",
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+    "RUF",
+    "UP",
+]
+ignore = [
+    # The codebase intentionally uses mutable LangGraph-style state and
+    # prompt-construction dictionaries in places where copying would add noise.
+    "B006",
+    "B007",
+    "B008",
+    # Prompt text and scientific docs intentionally contain Unicode typography.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    # Keep this first rollout focused on high-signal checks; these conventions
+    # should be ratcheted after the codebase-wide formatting/type baseline lands.
+    "RUF005",
+    "RUF012",
+    "RUF015",
+    "RUF043",
+    "RUF059",
+]
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
+"tests/**/*.py" = ["ARG001", "ARG002", "ARG005", "PLR2004", "S101"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+show_error_codes = true
+pretty = true
+explicit_package_bases = true
+disable_error_code = [
+    "arg-type",
+    "assignment",
+    "attr-defined",
+    "call-arg",
+    "call-overload",
+    "dict-item",
+    "func-returns-value",
+    "index",
+    "list-item",
+    "method-assign",
+    "misc",
+    "name-defined",
+    "no-any-return",
+    "no-redef",
+    "operator",
+    "return-value",
+    "str-unpack",
+    "type-var",
+    "union-attr",
+    "unused-ignore",
+    "var-annotated",
+]
+exclude = [
+    "^\\.agents/",
+    "^\\.vscode/",
+    "^Ranker_Validation_Experiment/",
+    "^notebooks/",
+    "^outputs/",
+    "^snapshots/",
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "arxiv.*",
+    "anndata.*",
+    "docker.*",
+    "faiss.*",
+    "flask.*",
+    "hydra.*",
+    "langchain.*",
+    "langchain_community.*",
+    "langchain_core.*",
+    "langchain_openai.*",
+    "langgraph.*",
+    "matplotlib.*",
+    "networkx.*",
+    "numpy.*",
+    "omegaconf.*",
+    "pandas.*",
+    "plotly.*",
+    "requests.*",
+    "rich.*",
+    "scipy.*",
+    "typing_extensions.*",
+    "yaml.*",
+]
+ignore_missing_imports = true
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-module = false
+ignore-nested-functions = true
+ignore-private = true
+ignore-property-decorators = true
+fail-under = 52
+exclude = [
+    "tests",
+    "outputs",
+    "snapshots",
+    "notebooks",
+    "Ranker_Validation_Experiment",
+]
+verbose = 1
+
+[tool.pydoclint]
+style = "google"
+exclude = "\\.git|\\.pytest_cache|\\.agents|\\.vscode|outputs|snapshots|notebooks|Ranker_Validation_Experiment"
+baseline = ".pydoclint-baseline"
+arg-type-hints-in-docstring = false
+check-return-types = false
+skip-checking-raises = true
+allow-init-docstring = true
+check-class-attributes = false
+ignore-private-args = true
+should-document-star-arguments = false

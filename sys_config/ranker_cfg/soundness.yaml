@@ -1,0 +1,9 @@
+defaults:
+  - default
+  - _self_
+
+criteria_prompt: |
+  Compare the two papers exclusively on the following dimension:
+  **Soundness (Validation/Support)**.
+
+  Evaluate whether the claims are supported by coherent, reasonable evidence.

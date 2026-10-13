@@ -1,0 +1,5 @@
+# No reviewer norm injected (default). Compose explicitly with
+#   +review_norm@review.norm_prompt=none
+enabled: false
+label: null
+text: null

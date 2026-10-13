@@ -1,0 +1,75 @@
+# Ranker judge settings — shared by ranker.yaml and sample_and_rank.yaml
+# Compose into the `ranker` key via: ranker_cfg@ranker: default
+
+# Which LLM backend to use for the judge (key from endpoints.*)
+llm_backend: gpt5-high
+
+# Which ranker mode to use:
+# - "comparison": determine which paper is better (default)
+# - "hypothesis_similarity": determine if hypotheses are same or different
+mode: comparison
+
+# Maximum think-act iterations before forcing a verdict
+max_iterations: 10
+
+# Criteria prompt: the core instruction for how to compare papers.
+criteria_prompt: |
+  Compare the two papers on the following dimensions:
+  1. Novelty (Originality): Evaluate the conceptual uniqueness of the papers, compared to your best knowledge of the relevant scientific field.
+  2. Significance (Impact): Evaluate the potential scientific value and broader importance of the work to the relevant scientific field.
+  3. Soundness (Validation/Support): Evaluate whether the claims are supported by coherent, reasonable evidence.
+
+  Weigh these dimensions appropriately, as a researcher would, when making the decision.
+
+# Tool availability
+tools:
+  arxiv:
+    enabled: false
+    top_k_results: 5
+    load_max_docs: 5
+  sandbox:
+    enabled: false
+    base_url: null
+    code_timeout_seconds: 120
+    session_create_timeout_seconds: 60
+
+# Retry / fallback for LLM calls
+llm_retry:
+  max_retries: 3
+  base_delay_seconds: 2.0
+  max_delay_seconds: 30.0
+
+# Whether to include code in the comparison prompt:
+include_code: true
+# Whether to include dataset descriptions in the comparison prompt:
+include_dataset_description: true
+# Whether to include cited papers in the comparison prompt:
+include_cited_papers: true
+
+# Order of cited papers in the prompt: "newest_first" or "oldest_first".
+cited_papers_order: newest_first
+
+# Visual separator between Paper A and Paper B in the user message.
+paper_separator: |
+  ---
+  ---
+  ---
+
+# Short descriptions of each paper section, injected into the system prompt.
+# Only notes whose corresponding include_* flag is enabled are included.
+# The "manuscript" note is always included.
+prompt_section_notes:
+  preamble: >-
+    Each paper is presented with the following sections:
+  manuscript: >-
+    A Manuscript section containing the paper's title, abstract, and full text.
+  include_dataset_description: >-
+    A Dataset Description section describing the dataset(s) used in the research.
+  include_code: >-
+    A Code section showing the implementation produced by the research agent. Consider this when evaluating the paper.
+  include_cited_papers: >-
+    A Cited Papers section listing previously published papers that the research builds upon. Take these into account as sources of evidence when evaluating the paper.
+
+# Output parsing
+output_parsing:
+  max_parse_retries: 2

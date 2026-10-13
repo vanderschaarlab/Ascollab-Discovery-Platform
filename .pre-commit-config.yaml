@@ -1,0 +1,187 @@
+default_language_version:
+  python: python3.11
+
+default_stages: [pre-commit]
+
+exclude: |
+  (?x)^(
+    \.agents/|
+    \.vscode/|
+    outputs/|
+    snapshots/
+  )
+
+repos:
+  - repo: local
+    hooks:
+      - id: trailing-whitespace
+        name: trim trailing whitespace
+        entry: trailing-whitespace-fixer
+        language: system
+        types_or: [text]
+
+      - id: end-of-file-fixer
+        name: fix end of files
+        entry: end-of-file-fixer
+        language: system
+        types_or: [text]
+
+      - id: check-yaml
+        name: check yaml
+        entry: check-yaml
+        language: system
+        types: [yaml]
+
+      - id: check-toml
+        name: check toml
+        entry: check-toml
+        language: system
+        types: [toml]
+
+      - id: check-json
+        name: check json
+        entry: check-json
+        language: system
+        types: [json]
+
+      - id: check-ast
+        name: check python ast
+        entry: check-ast
+        language: system
+        types: [python]
+
+      - id: check-merge-conflict
+        name: check merge conflicts
+        entry: check-merge-conflict
+        language: system
+        types_or: [text]
+
+      - id: check-case-conflict
+        name: check case conflicts
+        entry: check-case-conflict
+        language: system
+        pass_filenames: false
+
+      - id: check-added-large-files
+        name: check added large files
+        entry: check-added-large-files --maxkb=500
+        language: system
+
+      - id: mixed-line-ending
+        name: normalize mixed line endings
+        entry: mixed-line-ending --fix=lf
+        language: system
+        types_or: [text]
+
+      - id: debug-statements
+        name: check debug statements
+        entry: debug-statement-hook
+        language: system
+        types: [python]
+
+      - id: detect-private-key
+        name: detect private key
+        entry: detect-private-key
+        language: system
+        types_or: [text]
+
+      - id: nbstripout
+        name: strip notebook outputs
+        entry: nbstripout
+        language: system
+        types: [jupyter]
+
+      - id: ruff
+        name: ruff lint
+        entry: python -m ruff check --fix --exit-non-zero-on-fix
+        language: system
+        types_or: [python, pyi, jupyter]
+
+      - id: ruff-format
+        name: ruff format
+        entry: python -m ruff format
+        language: system
+        types_or: [python, pyi, jupyter]
+
+      - id: mypy
+        name: mypy
+        entry: python -m mypy
+        language: system
+        pass_filenames: false
+        args:
+          - --no-incremental
+          - agents
+          - env_setup
+          - ranker
+          - sandbox
+          - scripts
+          - stores
+          - system
+          - tests
+
+      - id: interrogate
+        name: interrogate docstring coverage
+        entry: python -m interrogate
+        language: system
+        pass_filenames: false
+        args:
+          - agents
+          - env_setup
+          - ranker
+          - sandbox
+          - scripts
+          - stores
+          - system
+
+      - id: pydoclint
+        name: pydoclint
+        entry: pydoclint
+        language: system
+        pass_filenames: false
+        args:
+          - agents
+          - env_setup
+          - ranker
+          - sandbox
+          - scripts
+          - stores
+          - system
+
+      # Release guards: no endpoint files (they hold API keys), no results or data, no machine
+      # paths, no personal email addresses.
+      - id: forbid-endpoint-files
+        name: forbid endpoint files
+        entry: >-
+          Endpoint files hold API keys: only the default_to_complete.yaml templates may be
+          committed (see docs/models.md).
+        language: fail
+        files: ^sys_config/(llm_api|embedder_api)/
+        exclude: ^sys_config/(llm_api|embedder_api)/default_to_complete\.yaml$
+
+      - id: forbid-results-and-data
+        name: forbid results and data files
+        entry: >-
+          The repository holds no results or data (see docs/data.md). Test fixtures go under
+          tests/**/fixtures/ and documentation images under docs/assets/.
+        language: fail
+        files: (?i)\.(csv|tsv|parquet|feather|arrow|pkl|pickle|joblib|npy|npz|h5|hdf5|h5ad|xlsx?|gz|zip|tar|tgz|bz2|xz|7z|rds|rdata|sav|dta|faiss|db|sqlite|png|jpe?g|gif|bmp|tiff?|webp|pdf|mp4)$
+        exclude: ^(tests/(.+/)?fixtures/|docs/assets/)
+
+      - id: forbid-machine-paths
+        name: forbid absolute home-directory paths
+        entry: (?<![\w.])/(?:home|Users)/[A-Za-z0-9_.-]+/
+        language: pygrep
+        types: [text]
+        exclude: ^\.pre-commit-config\.yaml$
+
+      - id: forbid-personal-emails
+        name: forbid personal email addresses
+        entry: (?<![\w.+-])(?!\+?(?:llm_api|embedder_api|review_norm|ranker_cfg|dataset)@)[\w.%+-]+@(?!users\.noreply\.github\.com\b|example\.(?:com|org)\b)[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b
+        language: pygrep
+        types: [text]
+        exclude: ^\.pre-commit-config\.yaml$
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
