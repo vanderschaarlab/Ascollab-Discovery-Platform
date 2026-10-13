@@ -39,3 +39,12 @@ def test_condition_runs_end_to_end(fixture_id, tmp_path):
     assert path.read_text(encoding="utf-8") == text, (
         f"{fixture_id} changed; review the diff and regenerate with E2E_UPDATE=1"
     )
+
+
+def test_fixtures_keep_five_significant_digits_of_long_decimals():
+    text = harness.dump(
+        {"prompt": "cosine 0.16232170164585114, score 0.45", "x": 0.16232168674468994}
+    )
+
+    assert "0.16232," in text and '"x": 0.16232' in text
+    assert "0.45" in text and "0.1623217" not in text

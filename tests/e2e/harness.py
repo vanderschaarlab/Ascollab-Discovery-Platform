@@ -21,6 +21,7 @@ Regenerate with ``E2E_UPDATE=1 pytest tests/e2e``.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -196,5 +197,11 @@ def conditions() -> dict[str, dict[str, Any]]:
     return collect_conditions()
 
 
+# Values computed from embeddings differ in their last digits between CPUs (the order in which
+# the linear-algebra library sums them), so fixtures keep 5 significant digits of long decimals.
+_LONG_FLOAT = re.compile(r"-?\d+\.\d{9,}")
+
+
 def dump(fixture: dict[str, Any]) -> str:
-    return json.dumps(fixture, indent=1, sort_keys=True) + "\n"
+    text = json.dumps(fixture, indent=1, sort_keys=True) + "\n"
+    return _LONG_FLOAT.sub(lambda m: f"{float(m.group()):.5g}", text)
